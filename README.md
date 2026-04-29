@@ -75,6 +75,20 @@ Colors, typography, shadows, spacing, component patterns, and animation conventi
 
 Run `/update-design-system` to refresh the token file from source.
 
+## Deploy (Netlify)
+
+```bash
+npm run build   # output → dist/
+```
+
+Set the following environment variable in the Netlify UI:
+
+| Variable | Purpose |
+|----------|---------|
+| `SITE_PASSWORD` | Password for the `/login` gate (read at runtime by the edge function) |
+
+A Netlify edge function (`netlify/edge-functions/auth.ts`) intercepts all `/*` routes and redirects unauthenticated visitors to `/login`. Auth is stored in an `HttpOnly` cookie (`calx_auth`).
+
 ## Claude Code Commands
 
 | Command | What it does |

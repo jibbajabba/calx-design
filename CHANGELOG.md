@@ -1,5 +1,11 @@
 # Calx — Changelog
 
+## [0.1.1] — 2026-04-29
+
+### Infrastructure
+
+- **Password protection** — Netlify edge function (`netlify/edge-functions/auth.ts`) gates all routes behind a `/login` page; password stored in `SITE_PASSWORD` env var; auth cookie `calx_auth` set on success; `netlify.toml` configures build (`npm run build → dist`) and routes `/*` through the edge function
+
 ## [0.1.0] — 2026-04-28
 
 ### Features & Improvements

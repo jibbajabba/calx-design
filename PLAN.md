@@ -10,6 +10,7 @@
 - [x] AI chat sidebar — sparkle button toggles panel on all three tabs; each tab has contextual copy and its own header label
 - [x] Design system — Clay palette, custom shadow scale, font stack, design.ts token reference
 - [x] Documentation — README, CHANGELOG, MEMORY.md, design.ts updated
+- [x] Password protection — Netlify edge function auth gate with `SITE_PASSWORD` env var (2026-04-29)
 
 ## In Progress
 

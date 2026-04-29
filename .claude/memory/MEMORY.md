@@ -12,6 +12,7 @@
 - `npm run build` runs `tsc -b && vite build` — TypeScript errors block the build
 - `noUnusedLocals` and `noUnusedParameters` enforced — always remove imports when removing usage
 - Target repo: `https://github.com/calxinfo/design`
+- **Netlify edge function auth** — `netlify/edge-functions/auth.ts` gates all `/*` routes; password in `SITE_PASSWORD` env var; sets `HttpOnly` cookie `calx_auth=1` on success; `/login` POST handler is exempted from the gate
 
 ## Known Issues & Workarounds
 
