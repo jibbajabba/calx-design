@@ -220,21 +220,37 @@ export default function HarmsContent({ chatOpen }: { chatOpen: boolean }) {
       {/* ── Chat sidebar ── */}
       {chatOpen && <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
-          <p className="text-[9px] font-semibold text-[#737373] tracking-widest uppercase">Harms Analysis Chat</p>
+          <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Harms Analysis Chat</p>
           <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
         </div>
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
-          <p className="text-xs text-[#404040] leading-relaxed">
+          <p className="text-sm text-[#404040] leading-relaxed">
             Three causal chains account for an estimated 89% of microplastic loading into San Francisco Bay from the study area. The dominant chain — tire wear via freeway stormwater — alone drives 52% of total particles. Textile fibers are the second-largest source but follow a different pathway (residential drainage vs. freeway corridors), which matters for intervention design: solutions for tire wear don't address fibers, and vice versa.
           </p>
-          <p className="text-xs text-[#404040] leading-relaxed">
+          <p className="text-sm text-[#404040] leading-relaxed">
             The strongest links in the chain (tire wear to stormwater, stormwater to Bay water) are well-supported by SFEI field measurements. The weakest links are the downstream health and economic impacts, where evidence is emerging but thresholds don't exist yet. This means we can confidently quantify the loading problem but can only estimate the cost of inaction.
           </p>
         </div>
         <div className="shrink-0 px-3 pb-3 pt-2 space-y-2 border-t border-[#e5e5e5]">
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {[
+              'What causes the most harm?',
+              'How does 6PPD-q affect salmon?',
+              'Which counties are most exposed?',
+              'What are the health thresholds?',
+              'How does stormwater carry TWP?',
+            ].map(q => (
+              <button
+                key={q}
+                className="text-xs text-[#404040] bg-neutral-100 hover:bg-neutral-200 border border-[#e5e5e5] rounded-full px-2.5 py-1 leading-none transition-colors"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center gap-2 border border-[#e5e5e5] rounded-lg px-3 py-2">
             <input
-              placeholder="Ask about this region..."
+              placeholder="Ask about this analysis..."
               className="flex-1 text-xs text-[#737373] bg-transparent outline-none border-none placeholder:text-[#737373]"
             />
             <button className="w-5 h-5 bg-foreground rounded-full flex items-center justify-center shrink-0">
@@ -243,9 +259,6 @@ export default function HarmsContent({ chatOpen }: { chatOpen: boolean }) {
               </svg>
             </button>
           </div>
-          <button className="w-full border border-[#e5e5e5] rounded-lg py-2 text-xs text-[#404040] hover:bg-neutral-50 transition-colors">
-            suggest interventions
-          </button>
         </div>
       </aside>}
     </>

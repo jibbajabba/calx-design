@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle } from 'lucide-react'
+import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown } from 'lucide-react'
 import HarmsContent from './HarmsPage'
 import InterventionsContent from './InterventionsPage'
+import EmissionMapTab from './EmissionMapTab'
+import type { HotspotMode, FilterMode, BufferKey } from './EmissionMapTab'
+import CountySidebar from './CountySidebar'
+import { GIS, COUNTY_NAMES, BY_RISK, RISK_SCORES, getEmissions, mgdToTonnesYr } from '../data/countyData'
 
 // ─── Small reusable pieces ────────────────────────────────────────────────────
 
@@ -22,18 +26,6 @@ function DerivedBadge() {
   return <span className="bg-orange-50 text-orange-500 text-[9px] font-semibold tracking-wider whitespace-nowrap px-1.5 py-0.5 rounded">DERIVED</span>
 }
 
-function GisBadge() {
-  return <span className="bg-green-50 text-green-600 text-[9px] font-semibold tracking-wider whitespace-nowrap px-1.5 py-0.5 rounded">GIS MEASURED</span>
-}
-
-type BadgeVariant = 'measured' | 'derived' | 'gis'
-
-function SectionBadge({ variant }: { variant: BadgeVariant }) {
-  if (variant === 'derived') return <DerivedBadge />
-  if (variant === 'gis') return <GisBadge />
-  return <MeasuredBadge />
-}
-
 interface StatMetricProps {
   label: string
   badge: 'measured' | 'derived'
@@ -45,7 +37,7 @@ function StatMetric({ label, badge, value, description }: StatMetricProps) {
   return (
     <div className="border-l border-[#e5e5e5] first:border-l-0 flex flex-col gap-0.5 px-4 py-3 flex-1 min-w-0">
       <div className="flex items-center gap-1.5 flex-wrap">
-        <p className="text-[10px] font-semibold text-[#737373] tracking-wide uppercase leading-none">{label}</p>
+        <p className="text-[13px] font-semibold text-[#737373] tracking-widest uppercase leading-none">{label}</p>
         {badge === 'measured' ? <MeasuredBadge /> : <DerivedBadge />}
       </div>
       <div className="text-[26px] font-bold leading-tight">{value}</div>
@@ -54,9 +46,12 @@ function StatMetric({ label, badge, value, description }: StatMetricProps) {
   )
 }
 
-function MapTab({ label, dotColor, active = false }: { label: string; dotColor?: string; active?: boolean }) {
+type MapLayerTab = 'emissions' | 'farmland' | 'wind' | 'human' | 'trends' | 'economic' | 'models' | 'applications' | 'compounds'
+
+function MapTab({ label, dotColor, active = false, onClick }: { label: string; dotColor?: string; active?: boolean; onClick?: () => void }) {
   return (
     <button
+      onClick={onClick}
       className={`flex items-center gap-1.5 px-3 py-2 text-xs whitespace-nowrap transition-colors ${
         active ? 'border-b-2 border-foreground text-foreground font-medium' : 'text-[#737373] hover:bg-neutral-200 hover:text-foreground'
       }`}
@@ -67,33 +62,16 @@ function MapTab({ label, dotColor, active = false }: { label: string; dotColor?:
   )
 }
 
-function SidebarSection({ title, badge, children }: { title: string; badge: BadgeVariant; children: ReactNode }) {
+function ToggleBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
-    <div className="border-t border-[#e5e5e5] py-2">
-      <div className="flex items-center gap-1.5 px-3 mb-1.5 flex-wrap">
-        <p className="text-xs font-semibold text-foreground tracking-wide uppercase">{title}</p>
-        <SectionBadge variant={badge} />
-      </div>
-      {children}
-    </div>
-  )
-}
-
-function DataRow({ label, value, valueClass }: { label: string; value: string; valueClass?: string }) {
-  return (
-    <div className="flex items-center justify-between px-3 py-0.5">
-      <p className="text-xs text-[#404040]">{label}</p>
-      <p className={`text-xs font-medium text-right ${valueClass ?? 'text-foreground'}`}>{value}</p>
-    </div>
-  )
-}
-
-function RankedRow({ rank, label, value }: { rank: number; label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between px-3 py-0.5">
-      <p className="text-xs text-[#404040]">{rank}. {label}</p>
-      <p className="text-xs text-[#737373] text-right shrink-0 ml-2">{value}</p>
-    </div>
+    <button
+      onClick={onClick}
+      className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap transition-colors ${
+        active ? 'bg-green-600 text-white' : 'border border-[#d4d4d4] text-[#404040] hover:bg-neutral-50'
+      }`}
+    >
+      {label}
+    </button>
   )
 }
 
@@ -101,21 +79,36 @@ function OverviewChat() {
   return (
     <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
-        <p className="text-[9px] font-semibold text-[#737373] tracking-widest uppercase">Overview Analysis Chat</p>
+        <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Overview Analysis Chat</p>
         <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
       </div>
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
-        <p className="text-xs text-[#404040] leading-relaxed">
-          California highways emit an estimated 922.3 tonnes of tire wear particles annually. San Joaquin County leads combined risk, with prevailing winds concentrating deposition on the same farmland year after year.
-        </p>
-        <p className="text-xs text-[#404040] leading-relaxed">
-          The 2020 COVID lockdowns provided a natural experiment — a 10.1% drop in emissions validates the model and shows that traffic reduction directly cuts loading. With traffic growing at +4.0% per decade, intervention timing matters.
-        </p>
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 text-center min-h-0">
+        <div className="w-8 h-8 rounded-full bg-clay-50 flex items-center justify-center mb-3">
+          <span className="text-clay-600 text-sm font-bold">AI</span>
+        </div>
+        <p className="text-sm font-medium text-foreground mb-1">Ask about this analysis</p>
+        <p className="text-xs text-[#737373] leading-relaxed">Use the suggested prompts below or type your own question about TWP emissions, county risk, or farmland exposure.</p>
       </div>
       <div className="shrink-0 px-3 pb-3 pt-2 space-y-2 border-t border-[#e5e5e5]">
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {[
+            'Which counties are highest risk?',
+            'How does wind affect deposition?',
+            'What is 6PPD-quinone?',
+            'Compare PM10 vs PM2.5',
+            'How was risk score calculated?',
+          ].map(q => (
+            <button
+              key={q}
+              className="text-xs text-[#404040] bg-neutral-100 hover:bg-neutral-200 border border-[#e5e5e5] rounded-full px-2.5 py-1 leading-none transition-colors"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
         <div className="flex items-center gap-2 border border-[#e5e5e5] rounded-lg px-3 py-2">
           <input
-            placeholder="Ask about this region..."
+            placeholder="Ask about this analysis..."
             className="flex-1 text-xs text-[#737373] bg-transparent outline-none border-none placeholder:text-[#737373]"
           />
           <button className="w-5 h-5 bg-foreground rounded-full flex items-center justify-center shrink-0">
@@ -135,6 +128,32 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [tab, setTab] = useState<'overview' | 'harms' | 'interventions'>('overview')
   const [chatOpen, setChatOpen] = useState(false)
 
+  // Dashboard controls
+  const [year, setYear] = useState('2021')
+  const [buffer, setBuffer] = useState<BufferKey>('1')
+  const [hotspot, setHotspot] = useState<HotspotMode>('all')
+  const [filter, setFilter] = useState<FilterMode>('all')
+  const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
+  const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
+  const [overviewCollapsed, setOverviewCollapsed] = useState(false)
+
+  // Computed statewide stats for the current year
+  const stats = useMemo(() => {
+    let totalPm10 = 0, totalPm25 = 0
+    Object.keys(GIS).forEach(co => {
+      const e = getEmissions(co, year)
+      totalPm10 += Math.max(0, e.pm10)
+      totalPm25 += Math.max(0, e.pm25)
+    })
+    const topRiskCode = BY_RISK[0]
+    return {
+      pm10: mgdToTonnesYr(totalPm10),
+      pm25: mgdToTonnesYr(totalPm25),
+      topRisk: COUNTY_NAMES[topRiskCode] ?? topRiskCode,
+      topRiskScore: Math.round(RISK_SCORES[topRiskCode] ?? 0),
+    }
+  }, [year])
+
   return (
     <div className="h-screen flex flex-col bg-background">
 
@@ -149,29 +168,28 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
           <span className="text-[#d4d4d4] text-xs">/</span>
           <button className="text-[#404040] text-xs font-medium hover:text-foreground">Tire wear particle emissions</button>
           <span className="text-[#d4d4d4] text-xs">/</span>
-          <button className="text-[#404040] text-xs font-medium hover:text-foreground">San Joaquin, CA</button>
+          <button
+            className="text-[#404040] text-xs font-medium hover:text-foreground"
+            onClick={() => setSelectedCounty(null)}
+          >
+            {selectedCounty ? (COUNTY_NAMES[selectedCounty] ?? selectedCounty) + ', CA' : 'San Joaquin, CA'}
+          </button>
         </div>
         <div className="flex-1" />
         <div className="flex self-stretch">
           <nav className="flex self-stretch">
-            <div className="flex flex-col self-stretch">
-              <button onClick={() => setTab('overview')} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === 'overview' ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
-                <LayoutGrid size={12} className="shrink-0" />
-                Overview
-              </button>
-            </div>
-            <div className="flex flex-col self-stretch">
-              <button onClick={() => setTab('harms')} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === 'harms' ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
-                <AlertTriangle size={12} className="shrink-0" />
-                Harms
-              </button>
-            </div>
-            <div className="flex flex-col self-stretch">
-              <button onClick={() => setTab('interventions')} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === 'interventions' ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
-                <SlidersHorizontal size={12} className="shrink-0" />
-                Interventions
-              </button>
-            </div>
+            {(['overview', 'harms', 'interventions'] as const).map((t, i) => {
+              const icons = [<LayoutGrid key="lg" size={12} />, <AlertTriangle key="at" size={12} />, <SlidersHorizontal key="sh" size={12} />]
+              const labels = ['Overview', 'Harms', 'Interventions']
+              return (
+                <div key={t} className="flex flex-col self-stretch">
+                  <button onClick={() => setTab(t)} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === t ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
+                    {icons[i]}
+                    {labels[i]}
+                  </button>
+                </div>
+              )
+            })}
           </nav>
           <button onClick={() => setChatOpen(o => !o)} className={`self-stretch flex items-center justify-center px-3 transition-colors ${chatOpen ? 'bg-clay-50 text-clay-600' : 'hover:bg-neutral-100 text-[#404040]'}`}>
             <Sparkles size={16} />
@@ -192,237 +210,252 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
           <InterventionsContent chatOpen={chatOpen} />
         </main>
       )}
-      {tab === 'overview' && <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
-      <div className="flex-1 flex flex-col gap-2.5 min-h-0 min-w-0">
+      {tab === 'overview' && (
+        <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
+          <div className="flex-1 flex flex-col gap-2.5 min-h-0 min-w-0">
 
-        {/* ── Overview & Analysis ── */}
-        <section className="bg-card rounded-lg shadow-sm">
-              <div className="flex items-stretch px-5 py-4 gap-5">
-                {/* Left column */}
-                <div className="w-[220px] shrink-0">
-                  <h2 className="font-serif text-[28px] font-semibold text-foreground leading-tight mb-2">Microplastics</h2>
-                  <p className="text-sm text-[#737373] leading-5">Tire Wear Particle Analysis : Tire wear particle emissions &amp; farmland deposition — California</p>
+            {/* ── Overview & Analysis ── */}
+            <section className="bg-card rounded-lg shadow-sm shrink-0 relative">
+              {/* Collapsed header — only visible when collapsed */}
+              {overviewCollapsed && (
+                <div className="flex items-center justify-between px-5 py-3">
+                  <h2 className="font-serif text-xl font-semibold text-foreground leading-tight">TWP Analysis</h2>
+                  <button
+                    onClick={() => setOverviewCollapsed(false)}
+                    className="text-[#a3a3a3] hover:text-foreground transition-colors duration-200"
+                  >
+                    <ChevronDown size={20} />
+                  </button>
                 </div>
-                {/* Column divider */}
-                <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-base text-foreground leading-6 mb-3">
-                    California highways emit an estimated <strong>922.3 tonnes of PM10</strong> and <strong>98 tonnes of PM2.5</strong> in tire wear particles annually across <strong>6,442 road segments</strong>. San Joaquin County ranks first in combined risk (score: 6,103), followed by Sacramento, Fresno, Kern, and Solano — all Central Valley counties where prevailing winds are exceptionally stable (CV 7.2%), concentrating deposition on the same farmland year after year.
-                  </p>
-                  <p className="text-base text-foreground leading-6 mb-3">
-                    An estimated <strong>$45.1B</strong> in agricultural value sits within 5km of California highways. Sutter County leads farmland exposure at 82.5% of its ag land within the buffer, with Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%) close behind. PM10 settles on crops within 1–2km of the roadway; the finer PM2.5 fraction stays airborne and reaches farmworkers up to 5km away.
-                  </p>
-                  <p className="text-base text-foreground leading-6">
-                    Los Angeles County is the largest single emitter at <strong>192.3 t/yr</strong>, reflecting its high AADT on a dense highway network. The 2020 COVID lockdowns provided a natural experiment — a <strong>10.1% drop</strong> in emissions (≈59 tonnes avoided) that closely tracks traffic volume reductions, validating the emissions model. With statewide traffic growing at +4.0% per decade, loading pressure will continue to rise without targeted intervention.
-                  </p>
-                </div>
-                {/* Expert advisor card */}
-                <div className="shrink-0 w-[480px] bg-bio-card rounded-lg overflow-hidden flex self-start">
-                  <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-28 h-28 shrink-0 object-cover self-start rounded-xl m-3" />
-                  <div className="flex-1 p-4">
-                    <p className="font-serif text-base font-semibold text-foreground leading-5 mb-0.5">Anup Sharma, PhD</p>
-                    <p className="text-sm text-[#737373] pb-2 mb-2 border-b border-[#e5e5e5]">Science Advisor · Calx Analyst</p>
-                    <p className="text-sm text-[#404040] leading-5">
-                      Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies.
-                    </p>
+              )}
+              {/* Collapsible body */}
+              <div className={`grid transition-all duration-300 ease-in-out ${overviewCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
+                <div className="overflow-hidden">
+                  <div className="relative flex items-stretch px-5 py-4 gap-5">
+                    {/* Collapse button — upper right of card when expanded */}
+                    {!overviewCollapsed && (
+                      <button
+                        onClick={() => setOverviewCollapsed(true)}
+                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-sm text-[#a3a3a3] hover:text-foreground transition-colors duration-200"
+                      >
+                        <ChevronDown size={16} className="rotate-180" />
+                      </button>
+                    )}
+                    <div className="w-[220px] shrink-0">
+                      <p className="font-serif text-[30px] font-semibold text-foreground leading-tight mb-2">TWP Analysis</p>
+                      <p className="text-sm text-[#737373] leading-5">TWP Analysis &amp; farmland deposition — California</p>
+                    </div>
+                    <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base text-foreground leading-6 mb-3">
+                        California highways emit an estimated <strong>922.3 tonnes of PM10</strong> and <strong>98 tonnes of PM2.5</strong> in tire wear particles annually across <strong>6,442 road segments</strong>. San Joaquin County ranks first in combined risk (score: 6,103), followed by Sacramento, Fresno, Kern, and Solano — all Central Valley counties where prevailing winds are exceptionally stable (CV 7.2%), concentrating deposition on the same farmland year after year.
+                      </p>
+                      <p className="text-base text-foreground leading-6 mb-3">
+                        An estimated <strong>$45.1B</strong> in agricultural value sits within 5km of California highways. Sutter County leads farmland exposure at 82.5% of its ag land within the buffer, with Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%) close behind. PM10 settles on crops within 1–2km of the roadway; the finer PM2.5 fraction stays airborne and reaches farmworkers up to 5km away.
+                      </p>
+                      <p className="text-base text-foreground leading-6">
+                        Los Angeles County is the largest single emitter at <strong>192.3 t/yr</strong>, reflecting its high AADT on a dense highway network. The 2020 COVID lockdowns provided a natural experiment — a <strong>10.1% drop</strong> in emissions (≈59 tonnes avoided) that closely tracks traffic volume reductions, validating the emissions model. With statewide traffic growing at +4.0% per decade, loading pressure will continue to rise without targeted intervention.
+                      </p>
+                    </div>
+                    <div className="shrink-0 w-[480px] bg-bio-card rounded-lg overflow-hidden flex self-start">
+                      <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-28 h-28 shrink-0 object-cover self-start rounded-xl m-3" />
+                      <div className="flex-1 p-4">
+                        <p className="font-serif text-base font-semibold text-foreground leading-5 mb-0.5">Anup Sharma, PhD</p>
+                        <p className="text-sm text-[#737373] pb-2 mb-2 border-b border-[#e5e5e5]">Science Advisor · Calx Analyst</p>
+                        <p className="text-sm text-[#404040] leading-5">
+                          Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies.
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-        </section>
+            </section>
 
-        {/* ── TWP Analysis ── */}
-        <section className="bg-card rounded-lg shadow-sm overflow-hidden flex-1 flex flex-col min-h-0">
+            {/* ── TWP Analysis ── */}
+            <section className="bg-card rounded-lg shadow-sm overflow-hidden flex-1 flex flex-col min-h-0">
 
-          {/* Panel header */}
-          <div className="border-b border-[#e5e5e5] flex items-center gap-3 px-4 py-2.5">
-            <p className="font-serif flex-1 text-xl font-semibold text-foreground leading-6">
-              Analysis
-            </p>
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="relative flex items-center">
-                <select className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 whitespace-nowrap appearance-none cursor-pointer" defaultValue="2023">
-                  <option>10-yr average</option>
-                  <option>2013</option>
-                  <option>2014</option>
-                  <option>2015</option>
-                  <option>2016</option>
-                  <option>2017</option>
-                  <option>2018</option>
-                  <option>2019</option>
-                  <option>2020 (COVID)</option>
-                  <option>2021</option>
-                  <option>2022</option>
-                  <option>2023</option>
-                </select>
-                <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
-              </div>
-              {['All counties', 'Sort: Combined risk', 'Buffer: 5km'].map(label => (
-                <button key={label} className="flex items-center gap-1 text-xs text-[#404040] border border-[#d4d4d4] rounded-sm px-2 py-0.5 hover:bg-neutral-50 whitespace-nowrap">
-                  {label} <ChevronDownIcon />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats row */}
-          <div className="border-b border-[#e5e5e5] flex">
-            <StatMetric label="Statewide PM10" badge="measured" value="535" description="tonnes/yr — settles on crops within 1–2km of highway" />
-            <StatMetric label="Statewide PM2.5" badge="measured" value="58" description="tonnes/yr — stays airborne, inhaled by farmworkers 5km+" />
-            <StatMetric label="AG Value at Risk" badge="measured" value="$45.1B" description="crops growing within 5km of highways" />
-            <StatMetric label="#1 Risk County" badge="derived" value={<span className="text-orange-500">SAN JOAQUIN</span>} description="highest combined: emissions + farmland + wind" />
-            <StatMetric label="Wind Stability" badge="measured" value="CV 7.2%" description="wind blows the same way every year — patterns are reliable" />
-            <StatMetric label="COVID Impact" badge="measured" value={<span className="text-green-600">-10.1%</span>} description="59 tonnes of tire dust avoided in 2020 — a natural experiment" />
-          </div>
-
-          {/* Map layer tabs */}
-          <div className="border-b border-[#e5e5e5] flex overflow-x-auto px-2 bg-stone-100">
-            <MapTab label="Emission map" dotColor="#22c55e" active />
-            <MapTab label="Farmland" dotColor="#22c55e" />
-            <MapTab label="Wind + transport" dotColor="#22c55e" />
-            <MapTab label="Human exposure" dotColor="#ef4444" />
-            <MapTab label="Trends" dotColor="#22c55e" />
-            <MapTab label="Economic impact" />
-            <MapTab label="Models" dotColor="#3b82f6" />
-            <MapTab label="Applications" />
-            <MapTab label="Compound explorer" dotColor="#ef4444" />
-          </div>
-
-          {/* Map canvas + data sidebar */}
-          <div className="flex flex-1 min-h-0">
-
-            {/* Map */}
-            <div className="flex-1 relative overflow-hidden bg-map-canvas">
-              <div className="absolute inset-0 flex items-center justify-center select-none">
-                <p className="text-[#9ca3af] text-sm">California map</p>
-              </div>
-
-              {/* Marker legend — bottom-right overlay */}
-              <div className="absolute bottom-4 right-3 bg-card rounded-lg shadow-md p-3">
-                <p className="text-[10px] font-semibold text-foreground mb-1.5">Marker colors (ag within buffer)</p>
-                {[
-                  { color: '#ef4444', label: '>40% farmland' },
-                  { color: '#f97316', label: '20-40% farmland' },
-                  { color: '#3b82f6', label: '5-20% farmland' },
-                  { color: '#9ca3af', label: '<5% farmland' },
-                ].map(({ color, label }) => (
-                  <div key={label} className="flex items-center gap-1.5 py-0.5">
-                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                    <p className="text-[10px] text-[#404040]">{label}</p>
+              {/* Panel header */}
+              <div className="border-b border-[#e5e5e5] flex items-center gap-3 px-4 py-2.5 shrink-0">
+                <p className="font-serif flex-1 text-xl font-semibold text-foreground leading-6">Analysis</p>
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Year */}
+                  <div className="relative flex items-center">
+                    <select
+                      value={year}
+                      onChange={e => { setYear(e.target.value); setSelectedCounty(null) }}
+                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
+                    >
+                      <option value="avg">10-yr average</option>
+                      {['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'].map(y => (
+                        <option key={y} value={y}>{y === '2020' ? '2020 (COVID)' : y}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
                   </div>
-                ))}
-                <p className="text-[9px] text-[#737373] mt-1.5">Size = combined risk score</p>
-              </div>
-
-              {/* Zoom island */}
-              <div className="absolute bottom-4 left-3 bg-card rounded-lg shadow-md overflow-hidden">
-                <button className="w-8 h-[34px] flex items-center justify-center hover:bg-neutral-50 border-b border-[#e5e5e5] text-sm font-medium text-[#404040]">+</button>
-                <button className="w-8 h-[34px] flex items-center justify-center hover:bg-neutral-50 text-sm font-medium text-[#404040]">−</button>
-              </div>
-
-              {/* Hotspots + Buffer island */}
-              <div className="absolute bottom-4 left-14 bg-card rounded-lg shadow-md px-3 py-2 flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs text-[#404040] font-medium whitespace-nowrap w-16 shrink-0">Hotspots:</p>
-                  {['None', 'All', 'Ramps', 'Hwy-farm', 'Convergence'].map(label => (
-                    <button
-                      key={label}
-                      className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap ${
-                        label === 'None' ? 'bg-green-600 text-white' : 'border border-[#d4d4d4] text-[#404040] hover:bg-neutral-50'
-                      }`}
+                  {/* County */}
+                  <div className="relative flex items-center">
+                    <select
+                      value={selectedCounty ?? 'all'}
+                      onChange={e => setSelectedCounty(e.target.value === 'all' ? null : e.target.value)}
+                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer max-w-[140px]"
                     >
-                      {label}
-                    </button>
+                      <option value="all">All counties</option>
+                      {Object.entries(COUNTY_NAMES).sort((a, b) => a[1].localeCompare(b[1])).map(([co, name]) => (
+                        <option key={co} value={co}>{name}</option>
+                      ))}
+                    </select>
+                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
+                  </div>
+                  {/* Sort */}
+                  <div className="relative flex items-center">
+                    <select
+                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
+                    >
+                      <option>Sort: Combined risk</option>
+                      <option>Sort: Farmland %</option>
+                      <option>Sort: Emissions</option>
+                      <option>Sort: Traffic (AADT)</option>
+                    </select>
+                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
+                  </div>
+                  {/* Buffer */}
+                  <div className="relative flex items-center">
+                    <select
+                      value={buffer}
+                      onChange={e => setBuffer(e.target.value as BufferKey)}
+                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
+                    >
+                      <option value="5">Buffer: 5km</option>
+                      <option value="2">Buffer: 2km</option>
+                      <option value="1">Buffer: 1km</option>
+                    </select>
+                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats row — live values from selected year */}
+              <div className="border-b border-[#e5e5e5] flex shrink-0">
+                <StatMetric label="Statewide PM10" badge="measured" value={String(stats.pm10)} description="tonnes/yr — settles on crops within 1–2km of highway" />
+                <StatMetric label="Statewide PM2.5" badge="measured" value={<span className="text-blue-500">{stats.pm25}</span>} description="tonnes/yr — stays airborne, inhaled by farmworkers 5km+" />
+                <StatMetric label="AG Value at Risk" badge="measured" value="$45.1B" description="crops growing within 5km of highways" />
+                <StatMetric label="#1 Risk County" badge="derived" value={<span className="text-orange-500 uppercase">{stats.topRisk}</span>} description="highest combined: emissions × farmland × wind" />
+                <StatMetric label="Wind Stability" badge="measured" value="CV 7.2%" description="wind blows the same way every year — patterns are reliable" />
+                <StatMetric label="COVID Impact" badge="measured" value={<span className="text-green-600">-10.1%</span>} description="59 tonnes of tire dust avoided in 2020 — a natural experiment" />
+              </div>
+
+              {/* Map layer tabs */}
+              <div className="border-b border-[#e5e5e5] flex overflow-x-auto px-2 bg-stone-100 shrink-0">
+                <MapTab label="Emission map" dotColor="#22c55e" active={mapLayer === 'emissions'} onClick={() => setMapLayer('emissions')} />
+                <MapTab label="Farmland" dotColor="#22c55e" active={mapLayer === 'farmland'} onClick={() => setMapLayer('farmland')} />
+                <MapTab label="Wind + transport" dotColor="#22c55e" active={mapLayer === 'wind'} onClick={() => setMapLayer('wind')} />
+                <MapTab label="Human exposure" dotColor="#ef4444" active={mapLayer === 'human'} onClick={() => setMapLayer('human')} />
+                <MapTab label="Trends" dotColor="#22c55e" active={mapLayer === 'trends'} onClick={() => setMapLayer('trends')} />
+                <MapTab label="Economic impact" active={mapLayer === 'economic'} onClick={() => setMapLayer('economic')} />
+                <MapTab label="Models" dotColor="#3b82f6" active={mapLayer === 'models'} onClick={() => setMapLayer('models')} />
+                <MapTab label="Applications" active={mapLayer === 'applications'} onClick={() => setMapLayer('applications')} />
+                <MapTab label="Compound explorer" dotColor="#ef4444" active={mapLayer === 'compounds'} onClick={() => setMapLayer('compounds')} />
+              </div>
+
+              {/* Map canvas + data sidebar */}
+              <div className="flex flex-1 min-h-0">
+
+                {mapLayer === 'emissions' ? (
+                  <>
+                    {/* Live Leaflet map */}
+                    <div className="flex-1 relative overflow-hidden">
+
+                      {/* Map fills container */}
+                      <EmissionMapTab
+                        year={year}
+                        buffer={buffer}
+                        hotspot={hotspot}
+                        filter={filter}
+                        selectedCounty={selectedCounty}
+                        onSelectCounty={setSelectedCounty}
+                      />
+
+                      {/* Marker legend — bottom-right overlay */}
+                      <div className="absolute bottom-4 right-3 bg-card rounded-lg shadow-md p-3 z-[1000]">
+                        <p className="text-[10px] font-semibold text-foreground mb-1.5">Marker colors (ag within buffer)</p>
+                        {[
+                          { color: '#E24B4A', label: '>40% farmland' },
+                          { color: '#EF9F27', label: '20–40% farmland' },
+                          { color: '#378ADD', label: '5–20% farmland' },
+                          { color: '#888888', label: '<5% farmland' },
+                        ].map(({ color, label }) => (
+                          <div key={label} className="flex items-center gap-1.5 py-0.5">
+                            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                            <p className="text-[10px] text-[#404040]">{label}</p>
+                          </div>
+                        ))}
+                        <p className="text-[9px] text-[#737373] mt-1.5">Size = combined risk score</p>
+                      </div>
+
+                      {/* Hotspots + Buffer island — adjacent to zoom controls (bottom-left) */}
+                      <div className="absolute bottom-3 left-14 bg-card rounded-lg shadow-sm px-3 py-2 flex flex-col gap-1.5 z-[1000]">
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs text-[#404040] font-medium whitespace-nowrap w-16 shrink-0">Hotspots:</p>
+                          {(['none', 'all', 'ramp', 'interface', 'convergence'] as HotspotMode[]).map(m => (
+                            <ToggleBtn key={m} label={m === 'none' ? 'None' : m === 'interface' ? 'Hwy-farm' : m.charAt(0).toUpperCase() + m.slice(1)} active={hotspot === m} onClick={() => setHotspot(m)} />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <p className="text-xs text-[#404040] font-medium whitespace-nowrap w-16 shrink-0">Buffer:</p>
+                          {(['1', '2', '5'] as BufferKey[]).map(b => (
+                            <ToggleBtn key={b} label={`${b}km`} active={buffer === b} onClick={() => setBuffer(b)} />
+                          ))}
+                          <span className="text-[#d4d4d4] text-xs px-1">|</span>
+                          {(['top10', 'bottom10', 'all'] as FilterMode[]).map(f => (
+                            <ToggleBtn key={f} label={f === 'top10' ? 'Top 10' : f === 'bottom10' ? 'Bottom 10' : 'All 58'} active={filter === f} onClick={() => setFilter(f)} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dynamic data sidebar */}
+                    <CountySidebar
+                      selectedCounty={selectedCounty}
+                      year={year}
+                      buffer={buffer}
+                      onSelectCounty={setSelectedCounty}
+                    />
+                  </>
+                ) : (
+                  /* Placeholder for other tabs */
+                  <div className="flex-1 flex items-center justify-center bg-map-canvas">
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-foreground mb-1">{mapLayer.charAt(0).toUpperCase() + mapLayer.slice(1).replace(/_/g, ' ')} view</p>
+                      <p className="text-xs text-[#737373]">Coming soon</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom legend + sources */}
+              <div className="border-t border-[#e5e5e5] flex items-center justify-between px-4 py-1.5 shrink-0">
+                <div className="flex items-center gap-4">
+                  {[
+                    { color: '#22c55e', label: 'Measured' },
+                    { color: '#f97316', label: 'Derived' },
+                    { color: '#ef4444', label: 'Estimated' },
+                  ].map(({ color, label }) => (
+                    <div key={label} className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
+                      <p className="text-[10px] text-[#404040]">{label}</p>
+                    </div>
                   ))}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <p className="text-xs text-[#404040] font-medium whitespace-nowrap w-16 shrink-0">Buffer:</p>
-                  {['1km', '2km', '5km', 'Top 10', 'Bottom 10', 'All 58'].map(label => (
-                    <button
-                      key={label}
-                      className={`text-xs px-2 py-0.5 rounded font-medium whitespace-nowrap ${
-                        label === '5km' ? 'bg-green-600 text-white' : 'border border-[#d4d4d4] text-[#404040] hover:bg-neutral-50'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Data sidebar */}
-            <div className="w-72 shrink-0 border-l border-[#e5e5e5] bg-card overflow-y-auto">
-              <div className="px-3 py-2.5 border-b border-[#e5e5e5] bg-stone-100">
-                <p className="text-sm font-semibold text-foreground">California — Statewide</p>
-                <p className="text-xs text-[#737373]">58 counties · 2021 · Click any county</p>
-              </div>
-
-              <SidebarSection title="EMISSIONS (2021)" badge="measured">
-                <DataRow label="Total PM10" value="922.3 t/yr" />
-                <DataRow label="Total PM2.5" value="98 t/yr" valueClass="text-orange-500 font-semibold" />
-                <p className="text-[10px] text-[#737373] px-3 py-1 leading-tight">
-                  PM10 settles on crops (1-2km) · PM2.5 inhaled by workers (5km+)
+                <p className="text-[9px] text-[#737373]">
+                  CalTrans AADT 2013–2023 · CIMIS 12 stations · USDA AgComm · CropScape CDL · GIS 58 counties
                 </p>
-                <DataRow label="Segments" value="6,442" />
-                <DataRow label="Avg AADT" value="37,121" />
-                <DataRow label="10-yr growth" value="+4.0%" />
-              </SidebarSection>
-
-              <SidebarSection title="TOP 5 RISK COUNTIES" badge="derived">
-                {[
-                  { name: 'San Joaquin', value: 'risk: 6103' },
-                  { name: 'Sacramento', value: 'risk: 5589' },
-                  { name: 'Fresno', value: 'risk: 4733' },
-                  { name: 'Kern', value: 'risk: 3816' },
-                  { name: 'Solano', value: 'risk: 3423' },
-                ].map(({ name, value }, i) => <RankedRow key={name} rank={i + 1} label={name} value={value} />)}
-              </SidebarSection>
-
-              <SidebarSection title="TOP 5 FARMLAND EXPOSURE (5KM)" badge="gis">
-                {[
-                  { name: 'Sutter', value: '82.5% ag within 5km' },
-                  { name: 'Colusa', value: '71.6% ag within 5km' },
-                  { name: 'Kings', value: '70.2% ag within 5km' },
-                  { name: 'Glenn', value: '63.4% ag within 5km' },
-                  { name: 'Yolo', value: '61.8% ag within 5km' },
-                ].map(({ name, value }, i) => <RankedRow key={name} rank={i + 1} label={name} value={value} />)}
-              </SidebarSection>
-
-              <SidebarSection title="TOP 5 EMITTERS" badge="measured">
-                {[
-                  { name: 'Los Angeles', value: '192.3 t/yr' },
-                  { name: 'San Diego', value: '82.8 t/yr' },
-                  { name: 'San Bernardino', value: '73.3 t/yr' },
-                  { name: 'Orange', value: '68 t/yr' },
-                  { name: 'Riverside', value: '62.6 t/yr' },
-                ].map(({ name, value }, i) => <RankedRow key={name} rank={i + 1} label={name} value={value} />)}
-              </SidebarSection>
-            </div>
+              </div>
+            </section>
           </div>
-
-          {/* Bottom legend + sources */}
-          <div className="border-t border-[#e5e5e5] flex items-center justify-between px-4 py-1.5">
-            <div className="flex items-center gap-4">
-              {[
-                { color: '#22c55e', label: 'Measured' },
-                { color: '#f97316', label: 'Derived' },
-                { color: '#ef4444', label: 'Estimated' },
-              ].map(({ color, label }) => (
-                <div key={label} className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                  <p className="text-[10px] text-[#404040]">{label}</p>
-                </div>
-              ))}
-            </div>
-            <p className="text-[9px] text-[#737373]">
-              CalTrans AADT 2013-2023 · CIMIS 12 stations · USDA AgComm · CropScape CDL · GIS 58 counties
-            </p>
-          </div>
-
-        </section>
-      </div>
-      {chatOpen && <OverviewChat />}
-      </main>}
+          {chatOpen && <OverviewChat />}
+        </main>
+      )}
     </div>
   )
 }

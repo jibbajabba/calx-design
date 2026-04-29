@@ -31,7 +31,14 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/design-system)",
       "Bash(kill %1)",
       "Skill(update-docs)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Bash(grep -n \"^const HOTSPOTS\\\\|^const countyMeta\\\\|^const riskScore\\\\|^};$\\\\|^];$\" \"/Users/mike/Desktop/calx/microplastics-anup/TWP Emissions & Farmland Deposition — California.html\")",
+      "Bash(python3 *)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl -s http://localhost:5175/)",
+      "Bash(curl -s \"http://localhost:5175/src/pages/EmissionMapTab.tsx\")",
+      "Bash(curl -sI \"http://localhost:5175/src/data/countyData.ts\")",
+      "Bash(node *)"
     ]
   }
 }

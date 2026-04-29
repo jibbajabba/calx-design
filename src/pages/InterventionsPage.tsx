@@ -181,29 +181,37 @@ export default function InterventionsContent({ chatOpen }: { chatOpen: boolean }
       {/* ── Chat sidebar ── */}
       {chatOpen && <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
-          <p className="text-[9px] font-semibold text-[#737373] tracking-widest uppercase">Intervention Analysis Chat</p>
+          <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Intervention Analysis Chat</p>
           <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
         </div>
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
-          <p className="text-xs text-[#404040] leading-relaxed">
+          <p className="text-sm text-[#404040] leading-relaxed">
             You're viewing intervention projections for 2030. Without action, external costs hit $11.4B and water stress reaches critical levels. Each intervention card shows how those numbers shift.
           </p>
-          <p className="text-xs text-[#404040] leading-relaxed">
+          <p className="text-sm text-[#404040] leading-relaxed">
             While water Recycling cuts external costs by $5.3B, it increases energy demand 6%. Want me to break down that tradeoff?
           </p>
-          <div className="flex flex-col gap-2 pt-1">
-            <button className="border border-[#e5e5e5] rounded-full px-3 py-1.5 text-xs text-[#404040] hover:bg-neutral-50 text-left transition-colors">
-              compare all 4 interventions
-            </button>
-            <button className="border border-[#e5e5e5] rounded-full px-3 py-1.5 text-xs text-[#404040] hover:bg-neutral-50 text-left transition-colors">
-              rank by net value impact
-            </button>
-          </div>
         </div>
-        <div className="shrink-0 px-3 pb-3 pt-2 border-t border-[#e5e5e5]">
+        <div className="shrink-0 px-3 pb-3 pt-2 space-y-2 border-t border-[#e5e5e5]">
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {[
+              'Compare all 4 interventions',
+              'Rank by net value impact',
+              'Which cuts the most emissions?',
+              'What are the co-benefits?',
+              'What does implementation cost?',
+            ].map(q => (
+              <button
+                key={q}
+                className="text-xs text-[#404040] bg-neutral-100 hover:bg-neutral-200 border border-[#e5e5e5] rounded-full px-2.5 py-1 leading-none transition-colors"
+              >
+                {q}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center gap-2 border border-[#e5e5e5] rounded-lg px-3 py-2">
             <input
-              placeholder="Ask about this region..."
+              placeholder="Ask about this analysis..."
               className="flex-1 text-xs text-[#737373] bg-transparent outline-none border-none placeholder:text-[#737373]"
             />
             <button className="w-5 h-5 bg-foreground rounded-full flex items-center justify-center shrink-0">
