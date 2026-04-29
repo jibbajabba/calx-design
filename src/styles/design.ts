@@ -164,6 +164,51 @@ export const shadows = {
 //   px-10    (40px) — content max-width padding
 //   py-4     (16px) — card vertical padding
 
+// --- Status & Severity Colors ---------------------------------
+
+// Used in Interventions and Harms pages to color-code metric values.
+// Positive / improving:   text-green-600
+// Warning / moderate:     text-orange-500
+// Critical / severe:      text-red-500
+// Neutral / default:      text-foreground
+
+// --- AI Chat Sidebar ------------------------------------------
+
+// Shared pattern across Overview, Harms, and Interventions pages.
+// Triggered by the sparkle (✦) button in the header nav (chatOpen state in OverviewPage).
+// Width: w-[240px] shrink-0
+//
+// Header:   flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5]
+//   Label:  text-[9px] font-semibold text-[#737373] tracking-widest uppercase
+//   Badge:  bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]
+// Body:     flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0
+//   Text:   text-xs text-[#404040] leading-relaxed
+//   Pills:  border border-[#e5e5e5] rounded-full px-3 py-1.5 text-xs text-[#404040]
+// Footer:   shrink-0 px-3 pb-3 pt-2 border-t border-[#e5e5e5]
+//   Input:  flex items-center gap-2 border border-[#e5e5e5] rounded-lg px-3 py-2
+//   Send:   w-5 h-5 bg-foreground rounded-full flex items-center justify-center
+
+// --- Causal Graph (Harms page) --------------------------------
+
+// SVG-based node graph inside an aspect-ratio-locked container.
+// This ensures absolute HTML popups positioned by SVG-coordinate percentages
+// are pixel-accurate regardless of container size.
+//
+// Container: flex-1 flex items-center justify-center min-h-0 overflow-hidden
+//   Inner:   relative; style={{ aspectRatio: '960/800', height: '100%', maxWidth: '100%' }}
+//   SVG:     viewBox="0 0 960 800" className="w-full h-full"
+//
+// Popup positioning formula:
+//   top:    (node.y - node.r) / 800 * 100 + '%'
+//   right:  (960 - node.x + node.r + 12) / 960 * 100 + '%'  (if node.x > 480)
+//   left:   (node.x + node.r + 12) / 960 * 100 + '%'        (if node.x ≤ 480)
+//
+// Edge confidence styles:
+//   Confirmed: no strokeDasharray
+//   Estimated: strokeDasharray="8 5"
+//   Inferred:  strokeDasharray="3 5"
+// Edge strength: Weak → strokeWidth 1.5 · Moderate → 2.5 · Strong → 4
+
 // --- Breakpoints ----------------------------------------------
 
 // Uses Tailwind default breakpoints. No custom overrides.

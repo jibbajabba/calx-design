@@ -29,7 +29,8 @@
       "Bash(cp ~/Sites/web-project-template/.claude/commands/*.md /Users/mike/Sites/calx/.claude/commands/)",
       "Bash(npm uninstall *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/design-system)",
-      "Bash(kill %1)"
+      "Bash(kill %1)",
+      "Skill(update-docs)"
     ]
   }
 }

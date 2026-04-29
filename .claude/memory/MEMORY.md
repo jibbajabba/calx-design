@@ -1,22 +1,32 @@
 # Calx — Project Memory
 
 ## Architecture
-<!-- Key architectural decisions and patterns -->
-- Two-view app: `'landing' | 'overview'` state in `App.tsx` — no router
-- Helper components defined inline at bottom of each page file (not in separate files)
-- Tailwind CSS v4 via `@tailwindcss/vite` — no `tailwind.config.js`
+
+- **Navigation** — No router. Two `useState` layers: `App.tsx` controls `'landing' | 'overview' | 'design-system'`; `OverviewPage.tsx` controls `'overview' | 'harms' | 'interventions'` tab + `chatOpen` boolean
+- **Page structure** — Three analysis tabs (Overview, Harms, Interventions) share a single header shell in `OverviewPage.tsx`. Each tab's content is a separate file (`HarmsPage.tsx`, `InterventionsPage.tsx`) exporting a `*Content` component that accepts `chatOpen: boolean`
+- **Helper components** — Defined inline at the bottom of each page file, not in separate files (per project convention)
+- **Tailwind CSS v4** — Configured via `@theme` block in `src/index.css`; no `tailwind.config.js`
 
 ## Build & Deploy
-<!-- Build commands, hosting config, deployment notes -->
+
+- `npm run build` runs `tsc -b && vite build` — TypeScript errors block the build
+- `noUnusedLocals` and `noUnusedParameters` enforced — always remove imports when removing usage
+- Target repo: `https://github.com/calxinfo/design`
 
 ## Known Issues & Workarounds
-<!-- Active bugs, patches, workarounds with context -->
+
+- SVG `foreignObject` does not auto-size to content height — replaced with absolute HTML overlays inside an aspect-ratio-locked parent for the Harms graph popovers
 
 ## Key Patterns
-<!-- Reusable patterns, conventions, gotchas -->
-- Fonts loaded via Google Fonts in `index.css` (Source Serif 4, Geist, Inter, Source Sans 3)
-- Icons: individual SVGs in `src/assets/icons/`, sprite at `public/icons.svg`
-- Font families always applied via inline `style` prop, not Tailwind utility classes
+
+- **Fonts** — Applied via Tailwind utility classes (`font-serif`, `font-sans`, `font-mono`), NOT via inline `style` prop. Loaded from Google Fonts in `index.css` (Source Serif 4, Source Sans 3, Roboto Mono)
+- **Icons** — Individual SVGs in `src/assets/icons/`; lucide-react used for UI icons
+- **AI chat sidebar** — `w-[240px]` aside, conditionally rendered via `chatOpen` prop; clay-600 "AI" badge with `rounded-[3px]`; identical shell pattern on all three tabs
+- **Causal graph popup positioning** — SVG viewBox 960×800; wrap SVG in `style={{ aspectRatio: '960/800', height: '100%', maxWidth: '100%' }}` so it fills parent exactly; position HTML popups using `(svgCoord / viewBoxDim * 100)%` — no ref or ResizeObserver needed
+- **Tab active state** — `border-b-2 border-clay-600 text-clay-600`; sparkle active: `bg-clay-50 text-clay-600`
+- **Status color coding** — green-600 (positive/stable), orange-500 (warning/moderate), red-500 (critical/severe)
 
 ## Dependencies
-<!-- Notable dependency choices and version constraints -->
+
+- `lucide-react ^1.8.0` — LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, Download, Check, TrendingUp, Droplets, Scale, Wind, CircleDollarSign
+- React 19, TypeScript 6, Vite 8 — all latest major as of project init

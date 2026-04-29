@@ -1,73 +1,87 @@
-# React + TypeScript + Vite
+# Calx
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A data-driven platform for analyzing systemic environmental and economic harms, modeling interventions, and surfacing evidence for meaningful action.
 
-Currently, two official plugins are available:
+## What It Does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Calx takes a research query (e.g., "impact of tire wear particles on California farmland") and produces a structured, evidence-backed analysis across three views:
 
-## React Compiler
+| Tab | What it shows |
+|-----|---------------|
+| **Overview** | Headline stats, expert advisor summary, TWP analysis dashboard with map and data sidebar |
+| **Harms** | Interactive causal chain graph linking environmental events to downstream social and economic impacts |
+| **Interventions** | Side-by-side modeling of interventions vs. a no-action baseline, with tradeoffs and projected outcomes |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+An AI chat panel (toggled via the ✦ sparkle button) provides contextual analysis on every view.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Layer | Choice |
+|-------|--------|
+| Framework | React 19 + TypeScript 6 |
+| Build | Vite 8 |
+| Styling | Tailwind CSS v4 via `@tailwindcss/vite` |
+| Icons | lucide-react |
+| Fonts | Source Serif 4, Source Sans 3, Roboto Mono (Google Fonts) |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Tailwind is configured via CSS `@theme` in `src/index.css` — there is no `tailwind.config.js`.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev       # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Commands
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev       # Start dev server with HMR (Vite)
+npm run build     # Type-check (tsc -b) then build for production
+npm run lint      # Run ESLint
+npm run preview   # Preview production build locally
 ```
+
+## Project Structure
+
+```
+src/
+├── App.tsx                    # Landing page + top-level navigation state
+├── index.css                  # @theme tokens (colors, fonts, shadows), global styles
+├── main.tsx                   # React entry point
+├── pages/
+│   ├── OverviewPage.tsx       # Shell: header, tab nav (overview/harms/interventions), chatOpen toggle
+│   ├── HarmsPage.tsx          # Causal chain SVG graph + node popovers + harms chat
+│   ├── InterventionsPage.tsx  # Intervention selector, stats, baseline vs intervention comparison
+│   └── DesignSystemPage.tsx   # Living design system reference (dev only)
+├── assets/
+│   ├── icons/                 # Individual SVG icons (droplets, wind, harms, etc.)
+│   ├── globe/                 # Globe animation assets (landing page)
+│   └── overview/              # Static assets for overview page
+└── styles/
+    └── design.ts              # Design token documentation and component pattern reference
+```
+
+## Navigation
+
+No router. Navigation is `useState` in two places:
+
+- **`App.tsx`** — `'landing' | 'overview' | 'design-system'`
+- **`OverviewPage.tsx`** — `'overview' | 'harms' | 'interventions'` (tab) + `chatOpen` (boolean)
+
+## Design System
+
+Colors, typography, shadows, spacing, component patterns, and animation conventions are documented in `src/styles/design.ts`. The brand accent palette is **Clay** (`clay-50` through `clay-950`).
+
+Run `/update-design-system` to refresh the token file from source.
+
+## Claude Code Commands
+
+| Command | What it does |
+|---------|-------------|
+| `/update-docs` | Runs all documentation updates in one pass |
+| `/update-design-system` | Scans tokens, maintains `src/styles/design.ts` |
+| `/update-changelog` | Generates changelog entry from git history |
+| `/update-readme` | Regenerates this file from project config |
+| `/update-memory` | Records patterns and decisions in `.claude/memory/MEMORY.md` |
+| `/update-plan` | Tracks roadmap progress in `PLAN.md` |
