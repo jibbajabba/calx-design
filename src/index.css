@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;0,8..60,700&family=Source+Sans+3:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--color-stone-200);
+  --color-card: #ffffff;
+  --color-foreground: var(--color-stone-900);
+  --color-bio-card: var(--color-stone-100);
+  --color-map-canvas: var(--color-slate-100);
+
+  --color-clay-50:  #FBF5F1;
+  --color-clay-100: #F6E8DE;
+  --color-clay-200: #EBCFBD;
+  --color-clay-300: #DFAF92;
+  --color-clay-400: #D18766;
+  --color-clay-500: #C4633F;
+  --color-clay-600: #B9563D;
+  --color-clay-700: #9A4434;
+  --color-clay-800: #7C3830;
+  --color-clay-900: #653029;
+  --color-clay-950: #361714;
+
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'Source Sans 3', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+  --radius: 0.5rem; /* rounded-lg — cards, overlays, all surface containers */
+
+  --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+  --shadow-xs:  0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-sm:  0 2px 4px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+  --shadow-md:  0 4px 8px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-lg:  0 8px 16px -2px rgb(0 0 0 / 0.10), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+  --shadow-xl:  0 16px 24px -4px rgb(0 0 0 / 0.12), 0 8px 10px -6px rgb(0 0 0 / 0.04);
+  --shadow-2xl: 0 24px 48px -8px rgb(0 0 0 / 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 16px;
+}
+
+#root {
+  width: 100%;
+}

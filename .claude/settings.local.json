@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__figma__get_design_context",
+      "mcp__figma__use_figma",
+      "Bash(npm create:*)",
+      "Bash(node -e \"process.stdin.resume\\(\\); process.stdin.pipe\\(process.stdout\\)\")",
+      "Bash(mv /Users/mike/Sites/calx/tmp/calx-scaffold/* /Users/mike/Sites/calx/)",
+      "Bash(mv /Users/mike/Sites/calx/tmp/calx-scaffold/.gitignore /Users/mike/Sites/calx/)",
+      "Bash(rm -rf /Users/mike/Sites/calx/tmp)",
+      "Bash(npm install:*)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/e9556588-f08a-44be-a0c0-8a9270b69deb\" -o /Users/mike/Sites/calx/src/assets/globe/search-icon.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/084dfeaf-84fa-4359-aad8-cdd6e6e90669\" -o /Users/mike/Sites/calx/src/assets/globe/arrow-right.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/d23c3596-30cb-48f4-ac8a-dc8c3dccea77\" -o /Users/mike/Sites/calx/src/assets/globe/globe-outline.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/69657cb6-0a89-4f09-ab1a-7c4d21f9a102\" -o /Users/mike/Sites/calx/src/assets/globe/globe-mask.png)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/31642ec2-82bb-4cc4-85df-9c08dccc61d4\" -o /Users/mike/Sites/calx/src/assets/globe/globe-bg.png)",
+      "Bash(xxd /Users/mike/Sites/calx/src/assets/globe/globe-mask.png)",
+      "Bash(npm run:*)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/0b69f0f9-814c-4aa4-b5f4-ec276b998fbc\" -o /Users/mike/Sites/calx/src/assets/icons/chevron-right.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/fc0ee917-af5a-4fa1-961c-4c8868f3f1ae\" -o /Users/mike/Sites/calx/src/assets/icons/plus.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/77ebb42a-b209-47dc-85f1-56b3b453ff54\" -o /Users/mike/Sites/calx/src/assets/icons/disc-2.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/1cfd626e-601b-4728-83e3-ae9a8af9c077\" -o /Users/mike/Sites/calx/src/assets/icons/person-standing.svg)",
+      "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/ed04fba6-8958-433f-9581-58e0a454df05\" -o /Users/mike/Sites/calx/src/assets/icons/wind.svg)",
+      "mcp__figma__get_metadata",
+      "mcp__figma__get_screenshot",
+      "Bash(npx tsc *)",
+      "Bash(mkdir -p /Users/mike/Sites/calx/.claude/commands /Users/mike/Sites/calx/.claude/memory)",
+      "Bash(cp ~/Sites/web-project-template/.claude/commands/*.md /Users/mike/Sites/calx/.claude/commands/)",
+      "Bash(npm uninstall *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5173/design-system)",
+      "Bash(kill %1)"
+    ]
+  }
+}
