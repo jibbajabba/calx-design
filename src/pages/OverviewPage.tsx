@@ -1,6 +1,8 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown, X, Check } from 'lucide-react'
+import * as Dialog from '@radix-ui/react-dialog'
+import * as Select from '@radix-ui/react-select'
 import HarmsContent from './HarmsPage'
 import InterventionsContent from './InterventionsPage'
 import EmissionMapTab from './EmissionMapTab'
@@ -10,11 +12,30 @@ import { GIS, COUNTY_NAMES, BY_RISK, RISK_SCORES, getEmissions, mgdToTonnesYr } 
 
 // ─── Small reusable pieces ────────────────────────────────────────────────────
 
-function ChevronDownIcon() {
+function AppSelect({ value, onValueChange, children }: { value: string; onValueChange: (v: string) => void; children: ReactNode }) {
   return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-      <path d="M2.5 3.75L5 6.25L7.5 3.75" stroke="#737373" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <Select.Root value={value} onValueChange={onValueChange}>
+      <Select.Trigger className="flex items-center gap-1 text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-1.5 py-0.5 bg-card hover:bg-neutral-50 outline-none focus:border-[#a3a3a3] data-[state=open]:border-[#a3a3a3] cursor-pointer whitespace-nowrap">
+        <Select.Value />
+        <Select.Icon><ChevronDown size={10} className="text-[#737373]" /></Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content position="popper" sideOffset={4} className="bg-card rounded-lg shadow-md border border-[#e5e5e5] overflow-hidden z-[9999] max-h-72">
+          <Select.Viewport className="p-1">
+            {children}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
+  )
+}
+
+function AppSelectItem({ value, children }: { value: string; children: ReactNode }) {
+  return (
+    <Select.Item value={value} className="flex items-center justify-between gap-4 text-xs text-[#404040] px-2.5 py-1.5 rounded outline-none cursor-pointer select-none data-[highlighted]:bg-neutral-100 data-[state=checked]:text-foreground data-[state=checked]:font-medium">
+      <Select.ItemText>{children}</Select.ItemText>
+      <Select.ItemIndicator><Check size={10} className="text-clay-600 shrink-0" /></Select.ItemIndicator>
+    </Select.Item>
   )
 }
 
@@ -146,13 +167,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
-  const [analystOpen, setAnalystOpen] = useState(false)
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setAnalystOpen(false) }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [])
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
 
@@ -307,6 +322,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                         <ChevronDown size={16} className="rotate-180" />
                       </button>
                     )}
+                    <Dialog.Root>
                     <div className="w-[270px] shrink-0 flex flex-col">
                       <p className="font-serif text-[30px] font-semibold text-foreground leading-tight mb-2">TWP Analysis</p>
                       <p className="text-sm text-[#737373] leading-5">Tire wear particle analysis &amp; farmland deposition — California</p>
@@ -314,12 +330,41 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                         <div className="flex items-center gap-2 mb-2">
                           <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-9 h-9 rounded-full object-cover shrink-0" />
                           <div className="min-w-0">
-                            <button onClick={() => setAnalystOpen(true)} className="text-sm font-semibold text-foreground hover:text-clay-600 transition-colors leading-4 text-left">Anup Sharma, PhD</button>
+                            <Dialog.Trigger asChild>
+                              <button className="text-sm font-semibold text-foreground hover:text-clay-600 transition-colors leading-4 text-left">Anup Sharma, PhD</button>
+                            </Dialog.Trigger>
                             <p className="text-xs text-[#737373] leading-4">Science Advisor · Calx Analyst</p>
                           </div>
                         </div>
                       </div>
                     </div>
+
+                    <Dialog.Portal>
+                      <Dialog.Overlay className="fixed inset-0 bg-black/30 z-[9998]" />
+                      <Dialog.Content className="fixed inset-0 z-[9999] flex items-center justify-center p-6 outline-none">
+                        <div className="relative bg-card rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+                          <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[#e5e5e5]">
+                            <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-20 h-20 rounded-xl object-cover object-top shrink-0" />
+                            <div>
+                              <Dialog.Title className="font-serif text-3xl font-semibold text-foreground leading-tight mb-0.5">Anup Sharma, PhD</Dialog.Title>
+                              <Dialog.Description className="text-base text-[#737373]">Science Advisor · Calx Analyst</Dialog.Description>
+                            </div>
+                          </div>
+                          <div className="px-6 pt-4 pb-5">
+                            <p className="text-base text-[#404040] leading-7">
+                              Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies. His research focuses on the intersection of environmental exposures and genomic responses, with particular emphasis on how particulate matter and chemical contaminants alter gene expression in agricultural and urban populations.
+                            </p>
+                          </div>
+                          <Dialog.Close asChild>
+                            <button className="absolute top-3 right-3 text-[#a3a3a3] hover:text-foreground transition-colors">
+                              <X size={18} />
+                            </button>
+                          </Dialog.Close>
+                        </div>
+                      </Dialog.Content>
+                    </Dialog.Portal>
+                    </Dialog.Root>
+
                     <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
                     <div className="flex-1 min-w-0 columns-2 gap-6">
                       <p className="text-base text-foreground leading-6 mb-3">
@@ -344,59 +389,29 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
               <div className="border-b border-[#e5e5e5] flex items-center gap-3 px-4 py-2.5 shrink-0">
                 <p className="font-serif flex-1 text-xl font-semibold text-foreground leading-6">Analysis</p>
                 <div className="flex items-center gap-2 shrink-0">
-                  {/* Year */}
-                  <div className="relative flex items-center">
-                    <select
-                      value={year}
-                      onChange={e => { setYear(e.target.value); setSelectedCounty(null) }}
-                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
-                    >
-                      <option value="avg">10-yr average</option>
-                      {['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'].map(y => (
-                        <option key={y} value={y}>{y === '2020' ? '2020 (COVID)' : y}</option>
-                      ))}
-                    </select>
-                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
-                  </div>
-                  {/* County */}
-                  <div className="relative flex items-center">
-                    <select
-                      value={selectedCounty ?? 'all'}
-                      onChange={e => setSelectedCounty(e.target.value === 'all' ? null : e.target.value)}
-                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer max-w-[140px]"
-                    >
-                      <option value="all">All counties</option>
-                      {Object.entries(COUNTY_NAMES).sort((a, b) => a[1].localeCompare(b[1])).map(([co, name]) => (
-                        <option key={co} value={co}>{name}</option>
-                      ))}
-                    </select>
-                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
-                  </div>
-                  {/* Sort */}
-                  <div className="relative flex items-center">
-                    <select
-                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
-                    >
-                      <option>Sort: Combined risk</option>
-                      <option>Sort: Farmland %</option>
-                      <option>Sort: Emissions</option>
-                      <option>Sort: Traffic (AADT)</option>
-                    </select>
-                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
-                  </div>
-                  {/* Buffer */}
-                  <div className="relative flex items-center">
-                    <select
-                      value={buffer}
-                      onChange={e => setBuffer(e.target.value as BufferKey)}
-                      className="text-xs text-[#404040] border border-[#d4d4d4] rounded-sm pl-2 pr-5 py-0.5 bg-card hover:bg-neutral-50 appearance-none cursor-pointer"
-                    >
-                      <option value="5">Buffer: 5km</option>
-                      <option value="2">Buffer: 2km</option>
-                      <option value="1">Buffer: 1km</option>
-                    </select>
-                    <span className="pointer-events-none absolute right-1.5"><ChevronDownIcon /></span>
-                  </div>
+                  <AppSelect value={year} onValueChange={v => { setYear(v); setSelectedCounty(null) }}>
+                    <AppSelectItem value="avg">10-yr average</AppSelectItem>
+                    {['2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'].map(y => (
+                      <AppSelectItem key={y} value={y}>{y === '2020' ? '2020 (COVID)' : y}</AppSelectItem>
+                    ))}
+                  </AppSelect>
+                  <AppSelect value={selectedCounty ?? 'all'} onValueChange={v => setSelectedCounty(v === 'all' ? null : v)}>
+                    <AppSelectItem value="all">All counties</AppSelectItem>
+                    {Object.entries(COUNTY_NAMES).sort((a, b) => a[1].localeCompare(b[1])).map(([co, name]) => (
+                      <AppSelectItem key={co} value={co}>{name}</AppSelectItem>
+                    ))}
+                  </AppSelect>
+                  <AppSelect value="risk" onValueChange={() => {}}>
+                    <AppSelectItem value="risk">Sort: Combined risk</AppSelectItem>
+                    <AppSelectItem value="farmland">Sort: Farmland %</AppSelectItem>
+                    <AppSelectItem value="emissions">Sort: Emissions</AppSelectItem>
+                    <AppSelectItem value="aadt">Sort: Traffic (AADT)</AppSelectItem>
+                  </AppSelect>
+                  <AppSelect value={buffer} onValueChange={v => setBuffer(v as BufferKey)}>
+                    <AppSelectItem value="1">Buffer: 1km</AppSelectItem>
+                    <AppSelectItem value="2">Buffer: 2km</AppSelectItem>
+                    <AppSelectItem value="5">Buffer: 5km</AppSelectItem>
+                  </AppSelect>
                 </div>
               </div>
 
@@ -527,29 +542,6 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
       )}
       </div>
 
-      {/* ── Analyst dialog ── */}
-      {analystOpen && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6" onClick={() => setAnalystOpen(false)}>
-          <div className="absolute inset-0 bg-black/30" />
-          <div className="relative bg-card rounded-xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setAnalystOpen(false)} className="absolute top-3 right-3 text-[#a3a3a3] hover:text-foreground transition-colors z-10">
-              <X size={18} />
-            </button>
-            <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[#e5e5e5]">
-              <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-20 h-20 rounded-xl object-cover object-top shrink-0" />
-              <div>
-                <p className="font-serif text-3xl font-semibold text-foreground leading-tight mb-0.5">Anup Sharma, PhD</p>
-                <p className="text-base text-[#737373]">Science Advisor · Calx Analyst</p>
-              </div>
-            </div>
-            <div className="px-6 pt-4 pb-5">
-              <p className="text-base text-[#404040] leading-7">
-                Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies. His research focuses on the intersection of environmental exposures and genomic responses, with particular emphasis on how particulate matter and chemical contaminants alter gene expression in agricultural and urban populations.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
