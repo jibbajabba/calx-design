@@ -64,10 +64,11 @@ export const typography = {
   },
 
   // Usage rules
-  // heading:  font-serif + font-semibold or font-light (display)
-  // body:     (body default) + font-normal, text-sm or text-base
-  // label:    font-sans + font-semibold + tracking-wide + uppercase + text-xs
-  // badge:    font-sans + font-semibold + tracking-wider + text-[9px]–text-[10px]
+  // heading:        font-serif + font-semibold or font-light (display)
+  // body:           (body default) + font-normal, text-sm or text-base
+  // eyebrow label:  font-sans + font-semibold + tracking-widest + uppercase + text-[13px]
+  // chat header:    font-sans + font-semibold + tracking-widest + uppercase + text-[11px]
+  // badge:          font-sans + font-semibold + tracking-wider + text-[9px]–text-[10px]
 } as const
 
 // --- Shadows --------------------------------------------------
@@ -179,14 +180,43 @@ export const shadows = {
 // Width: w-[240px] shrink-0
 //
 // Header:   flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5]
-//   Label:  text-[9px] font-semibold text-[#737373] tracking-widest uppercase
+//   Label:  text-[11px] font-semibold text-[#737373] tracking-widest uppercase
 //   Badge:  bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]
 // Body:     flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0
-//   Text:   text-xs text-[#404040] leading-relaxed
-//   Pills:  border border-[#e5e5e5] rounded-full px-3 py-1.5 text-xs text-[#404040]
-// Footer:   shrink-0 px-3 pb-3 pt-2 border-t border-[#e5e5e5]
+//   Text:   text-sm text-[#404040] leading-relaxed
+// Empty state (no messages):
+//   flex flex-col items-center justify-center px-4 py-6 text-center
+//   Icon:   w-8 h-8 rounded-full bg-clay-50 flex items-center justify-center
+//   Title:  text-sm font-medium text-foreground
+//   Hint:   text-xs text-[#737373] leading-relaxed
+// Footer:   shrink-0 px-3 pb-3 pt-2 space-y-2 border-t border-[#e5e5e5]
+//   Suggested prompts (pills):
+//     flex flex-wrap gap-1.5 mb-2
+//     text-xs text-[#404040] bg-neutral-100 hover:bg-neutral-200 border border-[#e5e5e5]
+//     rounded-full px-2.5 py-1 leading-none transition-colors
 //   Input:  flex items-center gap-2 border border-[#e5e5e5] rounded-lg px-3 py-2
 //   Send:   w-5 h-5 bg-foreground rounded-full flex items-center justify-center
+//   Placeholder: "Ask about this analysis..."
+
+// --- Collapsible Card -----------------------------------------
+
+// Pattern: card collapses to header-only bar; content animates out via CSS grid trick.
+// Collapse is triggered by a circle chevron button (up = expanded, down = collapsed).
+//
+// When expanded: no header bar; circle button sits absolute top-2 right-2 inside the card.
+//   Button: absolute top-2 right-2 w-7 h-7 flex items-center justify-center
+//           rounded-full bg-white shadow-sm text-[#a3a3a3] hover:text-foreground
+//           transition-colors duration-200
+//   Icon:   ChevronDown size={16} className="rotate-180"  (points up)
+//   Hide button immediately on click: render only when !collapsed
+//
+// When collapsed: header row appears with title + down chevron.
+//   Header: flex items-center justify-between px-5 py-3
+//   Title:  font-serif text-xl font-semibold text-foreground leading-tight
+//   Button: text-[#a3a3a3] hover:text-foreground transition-colors duration-200
+//   Icon:   ChevronDown size={20}  (points down)
+//
+// Collapsible body uses same grid height trick as above (Motion section).
 
 // --- Causal Graph (Harms page) --------------------------------
 

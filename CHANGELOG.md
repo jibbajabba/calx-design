@@ -1,5 +1,24 @@
 # Calx — Changelog
 
+## [0.1.2] — 2026-04-29
+
+### Features & Improvements
+
+- **Live Leaflet emission map** — 58-county CircleMarker layer (radius by risk score, color by farmland buffer %) with ramp hotspots, highway-farm interface, and convergence zone overlay layers; hotspot/buffer/filter controls wired to map state
+- **County data module** — `src/data/countyData.ts` with all 58-county data: CENTROIDS, GIS, EMISSIONS_2021, AADT trends, RISK_SCORES, rankings (BY_RISK, BY_AG5KM, BY_PM10), USDA, WIND, ECONOMIC, RAMP_HOTSPOTS (20), CONVERGENCE_ZONES (8); helper functions `mgdToTonnesYr`, `getEmissions`, `markerColor`
+- **County sidebar** — `CountySidebar.tsx` with statewide view (live PM10/PM2.5 totals, top-5 rankings for risk/farmland/emitters) and county drill-down view (emissions, farmland USDA, wind/atmosphere, GIS proximity bars, deposition, chemical loading, risk rank, economic impact)
+- **Collapsible overview card** — top card collapses to a header-only bar via CSS grid height trick; up chevron in white circle button with shadow triggers collapse; collapsed state shows "TWP Analysis" header with down chevron to restore
+- **Suggested prompt pills** — all three AI chat panels now have contextual question pill rows above the input field
+- **Overview chat empty state** — replaced pre-filled messages with centered empty state (clay AI badge, heading, hint text)
+
+### UI Polish
+
+- Leaflet zoom control styled to design system (`shadow-sm`, `border-[#e5e5e5]`, `rounded-lg`, grey icons)
+- Eyebrow section headings bumped to `text-[13px] tracking-widest` in both sidebar and stats row
+- AI chat panel header labels bumped from 9px to 11px; chat body text bumped to `text-sm`
+- Suggested prompt pills bumped to `text-xs`; placeholder updated to "Ask about this analysis..."
+- TWP Analysis heading in overview card set to 30px serif; card header simplified to "Microplastics" title only
+
 ## [0.1.1] — 2026-04-29
 
 ### Infrastructure

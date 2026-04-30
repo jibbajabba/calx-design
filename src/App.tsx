@@ -1,10 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import OverviewPage from './pages/OverviewPage'
 import DesignSystemPage from './pages/DesignSystemPage'
 import searchIcon from './assets/globe/search-icon.svg'
 import arrowRightIcon from './assets/globe/arrow-right.svg'
 
 type Page = 'landing' | 'overview' | 'design-system'
+
+const PLACEHOLDERS = [
+  'How does tire wear affect California farmland?',
+  'What are the health impacts of microplastics near highways?',
+  'Which counties face the highest TWP deposition risk?',
+  'How does fast fashion impact air quality in Bangladesh?',
+  'What are the downstream effects of highway runoff on ecosystems?',
+  'How do prevailing winds concentrate tire dust on crops?',
+  'What is 6PPD-quinone and why does it harm salmon?',
+  'Impact of industrial agriculture on rural water quality?',
+]
 
 const EXAMPLES = [
   'Philippines air quality vs. apparel export growth',
@@ -21,6 +32,20 @@ function getInitialPage(): Page {
 export default function App() {
   const [page, setPage] = useState<Page>(getInitialPage)
   const [query, setQuery] = useState('')
+  const [phIdx, setPhIdx] = useState(0)
+  const [phVisible, setPhVisible] = useState(true)
+  const [inputFocused, setInputFocused] = useState(false)
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPhVisible(false)
+      setTimeout(() => {
+        setPhIdx(i => (i + 1) % PLACEHOLDERS.length)
+        setPhVisible(true)
+      }, 400)
+    }, 3500)
+    return () => clearInterval(id)
+  }, [])
 
   function navigate(p: Page) {
     history.pushState(null, '', p === 'design-system' ? '/design-system' : '/')
@@ -43,12 +68,6 @@ export default function App() {
           <a href="#" className="text-foreground text-base font-normal">How It Works</a>
           <a href="#" className="text-foreground text-base font-normal">Use Cases</a>
           <a href="#" className="text-foreground text-base font-normal">Pricing</a>
-          <button
-            onClick={() => navigate('design-system')}
-            className="text-[#a3a3a3] text-sm font-normal hover:text-foreground transition-colors"
-          >
-            Design System
-          </button>
           <button className="bg-[#171717] text-[#fafafa] text-sm font-medium px-3 py-2 rounded min-h-[36px]">
             Get Started
           </button>
@@ -80,13 +99,24 @@ export default function App() {
                 <div className="shrink-0 w-5 h-5 flex items-center justify-center">
                   <img src={searchIcon} alt="" className="w-4 h-4" />
                 </div>
-                <input
-                  type="text"
-                  value={query}
-                  onChange={e => setQuery(e.target.value)}
-                  placeholder="How does fast fashion impact air quality in Bangladesh?"
-                  className="flex-1 text-sm text-[#737373] bg-transparent outline-none border-none placeholder:text-[#737373]"
-                />
+                <div className="relative flex-1 flex items-center">
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    onFocus={() => setInputFocused(true)}
+                    onBlur={() => setInputFocused(false)}
+                    className="w-full text-sm text-foreground bg-transparent outline-none border-none"
+                  />
+                  {!query && !inputFocused && (
+                    <span
+                      className="absolute inset-0 flex items-center text-sm text-[#737373] pointer-events-none transition-opacity duration-400"
+                      style={{ opacity: phVisible ? 1 : 0 }}
+                    >
+                      {PLACEHOLDERS[phIdx]}
+                    </span>
+                  )}
+                </div>
                 <button
                   className="shrink-0 w-10 h-10 flex items-center justify-center"
                   onClick={() => setPage('overview')}

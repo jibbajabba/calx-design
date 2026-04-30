@@ -11,6 +11,9 @@
 - [x] Design system — Clay palette, custom shadow scale, font stack, design.ts token reference
 - [x] Documentation — README, CHANGELOG, MEMORY.md, design.ts updated
 - [x] Password protection — Netlify edge function auth gate with `SITE_PASSWORD` env var (2026-04-29)
+- [x] Live Leaflet emission map — 58-county markers, ramp/interface/convergence hotspot layers, county sidebar with statewide + drill-down views (2026-04-29)
+- [x] Collapsible overview card — CSS grid height trick, circle chevron button, instant hide on click (2026-04-29)
+- [x] AI chat UI polish — suggested prompt pills, empty state, updated typography across all three chat panels (2026-04-29)
 
 ## In Progress
 
@@ -18,8 +21,9 @@
 
 ## Ideas
 
-- Real map integration (Mapbox / deck.gl) replacing the California map placeholder
+- Real map integration (Mapbox / deck.gl) for additional layers beyond emissions
 - Animated transitions between tabs
 - Actual AI chat API integration
 - Query input persisted from landing page into analysis views
 - Mobile / responsive layout pass
+- Farmland, Wind, Human Health, Trends, Economic, Models, Applications, Compound Explorer map tabs

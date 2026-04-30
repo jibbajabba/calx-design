@@ -49,8 +49,13 @@ src/
 ├── App.tsx                    # Landing page + top-level navigation state
 ├── index.css                  # @theme tokens (colors, fonts, shadows), global styles
 ├── main.tsx                   # React entry point
+├── data/
+│   └── countyData.ts          # 58-county dataset: centroids, GIS, emissions, risk scores,
+│                              #   USDA, wind, economic, hotspots; helper functions
 ├── pages/
-│   ├── OverviewPage.tsx       # Shell: header, tab nav (overview/harms/interventions), chatOpen toggle
+│   ├── OverviewPage.tsx       # Shell: header, tab nav, chatOpen toggle; Overview tab content
+│   ├── EmissionMapTab.tsx     # Leaflet map: county markers, ramp/interface/convergence layers
+│   ├── CountySidebar.tsx      # Statewide + county drill-down data sidebar
 │   ├── HarmsPage.tsx          # Causal chain SVG graph + node popovers + harms chat
 │   ├── InterventionsPage.tsx  # Intervention selector, stats, baseline vs intervention comparison
 │   └── DesignSystemPage.tsx   # Living design system reference (dev only)
