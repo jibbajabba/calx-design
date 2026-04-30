@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { ReactNode } from 'react'
-import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown } from 'lucide-react'
+import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown, X, Check } from 'lucide-react'
 import HarmsContent from './HarmsPage'
 import InterventionsContent from './InterventionsPage'
 import EmissionMapTab from './EmissionMapTab'
@@ -77,7 +77,7 @@ function ToggleBtn({ label, active, onClick }: { label: string; active: boolean;
 
 function OverviewChat() {
   return (
-    <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
+    <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
         <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Overview Analysis Chat</p>
         <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
@@ -146,6 +146,8 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
 
   // Computed statewide stats for the current year
   const stats = useMemo(() => {
@@ -206,8 +208,54 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
           </button>
           <div className="w-px h-4 bg-[#d4d4d4] self-center shrink-0 mx-2" />
         </div>
-        <UserCircle size={24} className="text-[#404040]" />
+        <button onClick={() => setSettingsOpen(o => !o)} className={`transition-colors ${settingsOpen ? 'text-clay-600' : 'text-[#404040] hover:text-foreground'}`}>
+          <UserCircle size={24} />
+        </button>
       </header>
+
+      {/* ── Settings panel ── */}
+      {settingsOpen && <div className="fixed inset-0 z-40" onClick={() => setSettingsOpen(false)} />}
+      <div className={`fixed top-11 right-0 bottom-0 w-72 bg-card shadow-xl z-50 flex flex-col transition-transform duration-300 ease-in-out ${settingsOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e5e5e5] shrink-0">
+          <p className="font-serif text-base font-semibold text-foreground">Settings</p>
+          <button onClick={() => setSettingsOpen(false)} className="text-[#a3a3a3] hover:text-foreground transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-5 py-5">
+          <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase mb-3">Theme</p>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => setTheme('wireframe')}
+              className={`border rounded-lg p-3 text-left transition-colors ${theme === 'wireframe' ? 'border-clay-500 bg-clay-50' : 'border-[#e5e5e5] hover:bg-neutral-50'}`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-foreground">Wireframe</p>
+                {theme === 'wireframe' && <Check size={14} className="text-clay-600" />}
+              </div>
+              <div className="h-10 rounded bg-stone-200 flex gap-1 p-1.5">
+                <div className="w-8 h-full bg-white rounded-sm" />
+                <div className="flex-1 h-full bg-white rounded-sm opacity-80" />
+              </div>
+              <p className="text-xs text-[#737373] mt-1.5">Neutral stone palette — current</p>
+            </button>
+            <button
+              disabled
+              className="border border-[#e5e5e5] rounded-lg p-3 text-left opacity-50 cursor-not-allowed"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-medium text-foreground">Branded</p>
+                <span className="text-[9px] font-semibold tracking-widest uppercase bg-neutral-100 text-[#737373] px-1.5 py-0.5 rounded">Soon</span>
+              </div>
+              <div className="h-10 rounded flex gap-1 p-1.5" style={{ backgroundColor: '#EBCFBD' }}>
+                <div className="w-8 h-full rounded-sm" style={{ backgroundColor: '#B9563D' }} />
+                <div className="flex-1 h-full bg-white rounded-sm opacity-80" />
+              </div>
+              <p className="text-xs text-[#737373] mt-1.5">Clay accent palette — coming soon</p>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* ── Body ── */}
       <div className="flex-1 flex flex-col min-h-0 transition-opacity duration-150 ease-in-out" style={{ opacity: tabVisible ? 1 : 0 }}>
@@ -464,8 +512,8 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
               </div>
             </section>
           </div>
-          <div className={`grid transition-all duration-300 ease-in-out ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
-            <div className="overflow-hidden">
+          <div className={`grid transition-all duration-300 ease-in-out self-stretch ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
+            <div className="overflow-hidden h-full">
               <OverviewChat />
             </div>
           </div>
