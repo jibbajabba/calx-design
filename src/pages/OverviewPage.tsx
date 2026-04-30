@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown, X, Check } from 'lucide-react'
 import HarmsContent from './HarmsPage'
@@ -146,6 +146,13 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
+  const [analystOpen, setAnalystOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setAnalystOpen(false) }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [])
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
 
@@ -290,7 +297,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
               {/* Collapsible body */}
               <div className={`grid transition-all duration-300 ease-in-out ${overviewCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
                 <div className="overflow-hidden">
-                  <div className="relative flex items-stretch px-5 py-4 gap-5">
+                  <div className="relative flex items-stretch px-5 pr-10 py-4 gap-5">
                     {/* Collapse button — upper right of card when expanded */}
                     {!overviewCollapsed && (
                       <button
@@ -300,12 +307,21 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                         <ChevronDown size={16} className="rotate-180" />
                       </button>
                     )}
-                    <div className="w-[220px] shrink-0">
+                    <div className="w-[270px] shrink-0 flex flex-col">
                       <p className="font-serif text-[30px] font-semibold text-foreground leading-tight mb-2">TWP Analysis</p>
-                      <p className="text-sm text-[#737373] leading-5">TWP Analysis &amp; farmland deposition — California</p>
+                      <p className="text-sm text-[#737373] leading-5">Tire wear particle analysis &amp; farmland deposition — California</p>
+                      <div className="mt-4 pt-4 border-t border-[#e5e5e5]">
+                        <div className="flex items-center gap-2 mb-2">
+                          <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-9 h-9 rounded-full object-cover shrink-0" />
+                          <div className="min-w-0">
+                            <button onClick={() => setAnalystOpen(true)} className="text-sm font-semibold text-foreground hover:text-clay-600 transition-colors leading-4 text-left">Anup Sharma, PhD</button>
+                            <p className="text-xs text-[#737373] leading-4">Science Advisor · Calx Analyst</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 columns-2 gap-6">
                       <p className="text-base text-foreground leading-6 mb-3">
                         California highways emit an estimated <strong>922.3 tonnes of PM10</strong> and <strong>98 tonnes of PM2.5</strong> in tire wear particles annually across <strong>6,442 road segments</strong>. San Joaquin County ranks first in combined risk (score: 6,103), followed by Sacramento, Fresno, Kern, and Solano — all Central Valley counties where prevailing winds are exceptionally stable (CV 7.2%), concentrating deposition on the same farmland year after year.
                       </p>
@@ -315,16 +331,6 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                       <p className="text-base text-foreground leading-6">
                         Los Angeles County is the largest single emitter at <strong>192.3 t/yr</strong>, reflecting its high AADT on a dense highway network. The 2020 COVID lockdowns provided a natural experiment — a <strong>10.1% drop</strong> in emissions (≈59 tonnes avoided) that closely tracks traffic volume reductions, validating the emissions model. With statewide traffic growing at +4.0% per decade, loading pressure will continue to rise without targeted intervention.
                       </p>
-                    </div>
-                    <div className="shrink-0 w-[480px] bg-bio-card rounded-lg overflow-hidden flex self-start">
-                      <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-28 h-28 shrink-0 object-cover self-start rounded-xl m-3" />
-                      <div className="flex-1 p-4">
-                        <p className="font-serif text-base font-semibold text-foreground leading-5 mb-0.5">Anup Sharma, PhD</p>
-                        <p className="text-sm text-[#737373] pb-2 mb-2 border-b border-[#e5e5e5]">Science Advisor · Calx Analyst</p>
-                        <p className="text-sm text-[#404040] leading-5">
-                          Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies.
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -520,6 +526,30 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
         </main>
       )}
       </div>
+
+      {/* ── Analyst dialog ── */}
+      {analystOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-6" onClick={() => setAnalystOpen(false)}>
+          <div className="absolute inset-0 bg-black/30" />
+          <div className="relative bg-card rounded-xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setAnalystOpen(false)} className="absolute top-3 right-3 text-[#a3a3a3] hover:text-foreground transition-colors z-10">
+              <X size={18} />
+            </button>
+            <div className="flex items-center gap-4 px-6 pt-6 pb-4 border-b border-[#e5e5e5]">
+              <img src="/images/anup-sharma.png" alt="Anup Sharma" className="w-20 h-20 rounded-xl object-cover object-top shrink-0" />
+              <div>
+                <p className="font-serif text-3xl font-semibold text-foreground leading-tight mb-0.5">Anup Sharma, PhD</p>
+                <p className="text-base text-[#737373]">Science Advisor · Calx Analyst</p>
+              </div>
+            </div>
+            <div className="px-6 pt-4 pb-5">
+              <p className="text-base text-[#404040] leading-7">
+                Translational epigenetics scientist at Yale School of Medicine with expertise in molecular mechanisms of disease and novel biomarker technologies. His research focuses on the intersection of environmental exposures and genomic responses, with particular emphasis on how particulate matter and chemical contaminants alter gene expression in agricultural and urban populations.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
