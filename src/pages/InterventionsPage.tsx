@@ -179,7 +179,9 @@ export default function InterventionsContent({ chatOpen }: { chatOpen: boolean }
       </section>
 
       {/* ── Chat sidebar ── */}
-      {chatOpen && <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
+      <div className={`grid transition-all duration-300 ease-in-out ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
+      <div className="overflow-hidden">
+      <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
           <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Intervention Analysis Chat</p>
           <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
@@ -221,7 +223,9 @@ export default function InterventionsContent({ chatOpen }: { chatOpen: boolean }
             </button>
           </div>
         </div>
-      </aside>}
+      </aside>
+      </div>
+      </div>
     </>
   )
 }

@@ -126,7 +126,17 @@ function OverviewChat() {
 
 export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [tab, setTab] = useState<'overview' | 'harms' | 'interventions'>('overview')
+  const [tabVisible, setTabVisible] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
+
+  function switchTab(t: typeof tab) {
+    if (t === tab) return
+    setTabVisible(false)
+    setTimeout(() => {
+      setTab(t)
+      setTabVisible(true)
+    }, 150)
+  }
 
   // Dashboard controls
   const [year, setYear] = useState('2021')
@@ -183,7 +193,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
               const labels = ['Overview', 'Harms', 'Interventions']
               return (
                 <div key={t} className="flex flex-col self-stretch">
-                  <button onClick={() => setTab(t)} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === t ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
+                  <button onClick={() => switchTab(t)} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === t ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
                     {icons[i]}
                     {labels[i]}
                   </button>
@@ -200,6 +210,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
       </header>
 
       {/* ── Body ── */}
+      <div className="flex-1 flex flex-col min-h-0 transition-opacity duration-150 ease-in-out" style={{ opacity: tabVisible ? 1 : 0 }}>
       {tab === 'harms' && (
         <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
           <HarmsContent chatOpen={chatOpen} />
@@ -453,9 +464,14 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
               </div>
             </section>
           </div>
-          {chatOpen && <OverviewChat />}
+          <div className={`grid transition-all duration-300 ease-in-out ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
+            <div className="overflow-hidden">
+              <OverviewChat />
+            </div>
+          </div>
         </main>
       )}
+      </div>
     </div>
   )
 }

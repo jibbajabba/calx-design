@@ -31,6 +31,7 @@ function getInitialPage(): Page {
 
 export default function App() {
   const [page, setPage] = useState<Page>(getInitialPage)
+  const [pageVisible, setPageVisible] = useState(true)
   const [query, setQuery] = useState('')
   const [phIdx, setPhIdx] = useState(0)
   const [phVisible, setPhVisible] = useState(true)
@@ -49,14 +50,23 @@ export default function App() {
 
   function navigate(p: Page) {
     history.pushState(null, '', p === 'design-system' ? '/design-system' : '/')
-    setPage(p)
+    setPageVisible(false)
+    setTimeout(() => {
+      setPage(p)
+      setPageVisible(true)
+    }, 200)
   }
 
-  if (page === 'overview') return <OverviewPage onHome={() => navigate('landing')} />
-  if (page === 'design-system') return <DesignSystemPage onHome={() => navigate('landing')} />
+  const fadeProps = {
+    className: 'transition-opacity duration-200 ease-in-out',
+    style: { opacity: pageVisible ? 1 : 0 },
+  }
+
+  if (page === 'overview') return <div {...fadeProps}><OverviewPage onHome={() => navigate('landing')} /></div>
+  if (page === 'design-system') return <div {...fadeProps}><DesignSystemPage onHome={() => navigate('landing')} /></div>
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div {...fadeProps} className={`${fadeProps.className} min-h-screen flex flex-col bg-background`}>
       {/* Header */}
       <header className="bg-card flex items-center gap-2.5 px-5 py-5 shadow-sm shrink-0">
         <div className="flex items-center gap-2 mr-auto">
