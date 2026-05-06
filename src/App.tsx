@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import OverviewPage from './pages/OverviewPage'
 import DesignSystemPage from './pages/DesignSystemPage'
+import ApparelPage from './pages/ApparelPage'
 import searchIcon from './assets/globe/search-icon.svg'
 import arrowRightIcon from './assets/globe/arrow-right.svg'
 
-type Page = 'landing' | 'overview' | 'design-system'
+type Page = 'landing' | 'microplastics' | 'apparel' | 'design-system'
+type Tab = 'overview' | 'harms' | 'interventions'
 
 const PLACEHOLDERS = [
   'How does tire wear affect California farmland?',
@@ -26,7 +28,16 @@ const EXAMPLES = [
 
 function getInitialPage(): Page {
   if (window.location.pathname === '/design-system') return 'design-system'
+  if (window.location.pathname.startsWith('/microplastics')) return 'microplastics'
+  if (window.location.pathname.startsWith('/apparel')) return 'apparel'
   return 'landing'
+}
+
+function getInitialTab(): Tab {
+  const p = window.location.pathname
+  if (p === '/microplastics/harms' || p === '/apparel/harms') return 'harms'
+  if (p === '/microplastics/interventions' || p === '/apparel/interventions') return 'interventions'
+  return 'overview'
 }
 
 export default function App() {
@@ -36,6 +47,18 @@ export default function App() {
   const [phIdx, setPhIdx] = useState(0)
   const [phVisible, setPhVisible] = useState(true)
   const [inputFocused, setInputFocused] = useState(false)
+
+  useEffect(() => {
+    function onPop() {
+      const { pathname } = window.location
+      if (pathname === '/design-system') setPage('design-system')
+      else if (pathname.startsWith('/microplastics')) setPage('microplastics')
+      else if (pathname.startsWith('/apparel')) setPage('apparel')
+      else setPage('landing')
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -49,7 +72,8 @@ export default function App() {
   }, [])
 
   function navigate(p: Page) {
-    history.pushState(null, '', p === 'design-system' ? '/design-system' : '/')
+    const path = p === 'design-system' ? '/design-system' : p === 'microplastics' ? '/microplastics' : p === 'apparel' ? '/apparel' : '/'
+    history.pushState(null, '', path)
     setPageVisible(false)
     setTimeout(() => {
       setPage(p)
@@ -62,7 +86,8 @@ export default function App() {
     style: { opacity: pageVisible ? 1 : 0 },
   }
 
-  if (page === 'overview') return <div {...fadeProps}><OverviewPage onHome={() => navigate('landing')} /></div>
+  if (page === 'microplastics') return <div {...fadeProps}><OverviewPage onHome={() => navigate('landing')} initialTab={getInitialTab()} /></div>
+  if (page === 'apparel') return <div {...fadeProps}><ApparelPage onHome={() => navigate('landing')} initialTab={getInitialTab()} /></div>
   if (page === 'design-system') return <div {...fadeProps}><DesignSystemPage onHome={() => navigate('landing')} /></div>
 
   return (
@@ -129,14 +154,35 @@ export default function App() {
                 </div>
                 <button
                   className="shrink-0 w-10 h-10 flex items-center justify-center"
-                  onClick={() => setPage('overview')}
+                  onClick={() => navigate('microplastics')}
                 >
                   <img src={arrowRightIcon} alt="Search" className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Example suggestions */}
+              {/* Featured analysis */}
               <div className="mt-5">
+                <p className="text-[#a3a3a3] text-[11px] font-bold tracking-widest mb-3 uppercase">Featured Analysis</p>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => navigate('microplastics')}
+                    className="flex items-center gap-2 bg-[#fafafa] border border-[#d4d4d4] text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-2xs hover:bg-card transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                    Microplastics and tire wear in California
+                  </button>
+                  <button
+                    onClick={() => navigate('apparel')}
+                    className="flex items-center gap-2 bg-[#fafafa] border border-[#d4d4d4] text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-2xs hover:bg-card transition-colors"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-orange-400 shrink-0" />
+                    Apparel and labor harm in Bangladesh
+                  </button>
+                </div>
+              </div>
+
+              {/* Example suggestions */}
+              <div className="mt-4">
                 <p className="text-[#a3a3a3] text-[11px] font-bold tracking-widest mb-3 uppercase">
                   Try an Example
                 </p>
@@ -144,7 +190,7 @@ export default function App() {
                   {EXAMPLES.map(ex => (
                     <button
                       key={ex}
-                      onClick={() => { setQuery(ex); setPage('overview') }}
+                      onClick={() => { setQuery(ex); navigate('microplastics') }}
                       className="bg-[#fafafa] border border-[#d4d4d4] text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-2xs hover:bg-card transition-colors"
                     >
                       {ex}

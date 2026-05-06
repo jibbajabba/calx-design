@@ -38,7 +38,8 @@
       "Bash(curl -s http://localhost:5175/)",
       "Bash(curl -s \"http://localhost:5175/src/pages/EmissionMapTab.tsx\")",
       "Bash(curl -sI \"http://localhost:5175/src/data/countyData.ts\")",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(npx tsx *)"
     ]
   }
 }

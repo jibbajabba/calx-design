@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import {
-  COUNTY_NAMES, GIS, RISK_SCORES, BY_RISK, BY_AG5KM,
+  COUNTY_NAMES, GIS, RISK_SCORES, EMISSIONS_2021, BY_RISK, BY_AG5KM,
   USDA, WIND, ECONOMIC,
   mgdToTonnesYr, getEmissions,
 } from '../data/countyData'
@@ -89,8 +89,25 @@ function StatewideContent({ year, buffer, onSelectCounty }: {
   const pm10Yr = mgdToTonnesYr(totalPm10)
   const pm25Yr = mgdToTonnesYr(totalPm25)
 
-  const topRisk = BY_RISK.slice(0, 5)
+  // Dynamic risk scores scaled by AADT for selected year
+  const dynamicRisk = Object.keys(GIS)
+    .map(co => {
+      const base = RISK_SCORES[co] ?? 0
+      const base21 = EMISSIONS_2021[co]?.pm10
+      const curr = getEmissions(co, year).pm10
+      const score = base21 && base21 > 0 ? base * (curr / base21) : base
+      return { co, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5)
+
   const topFarmland = BY_AG5KM.slice(0, 5)
+
+  // Dynamic avg AADT for selected year
+  const aadts = Object.keys(GIS).map(co => getEmissions(co, year).avg_aadt).filter(a => a > 0)
+  const avgAadt = aadts.length > 0
+    ? Math.round(aadts.reduce((a, b) => a + b, 0) / aadts.length).toLocaleString()
+    : '37,121'
 
   // Top emitters by pm10
   const emitters = Object.keys(GIS)
@@ -105,14 +122,14 @@ function StatewideContent({ year, buffer, onSelectCounty }: {
         <Row label="Total PM2.5" value={`${pm25Yr} t/yr`} valueClass="text-blue-500 font-medium" />
         <Note>PM10 settles on crops (1–2km) · PM2.5 inhaled by workers (5km+)</Note>
         <Row label="Segments" value="6,442" />
-        <Row label="Avg AADT" value="37,121" />
+        <Row label="Avg AADT" value={avgAadt} />
         <Row label="10-yr growth" value="+4.0%" />
       </Section>
 
       <Section title="Top 5 Risk Counties" badge={<DerivedBadge />}>
-        {topRisk.map((co, i) => (
+        {dynamicRisk.map(({ co, score }, i) => (
           <RankedRow key={co} rank={i + 1} label={COUNTY_NAMES[co] ?? co}
-            value={`risk: ${Math.round(RISK_SCORES[co] ?? 0)}`}
+            value={`risk: ${Math.round(score)}`}
             onClick={() => onSelectCounty(co)} />
         ))}
       </Section>

@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import lifecycleChart from '../assets/twp-lifecycle-chart.svg'
 import type { ReactNode } from 'react'
 import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown, X, Check } from 'lucide-react'
 import * as Dialog from '@radix-ui/react-dialog'
@@ -8,7 +9,7 @@ import InterventionsContent from './InterventionsPage'
 import EmissionMapTab from './EmissionMapTab'
 import type { HotspotMode, FilterMode, BufferKey } from './EmissionMapTab'
 import CountySidebar from './CountySidebar'
-import { GIS, COUNTY_NAMES, BY_RISK, RISK_SCORES, getEmissions, mgdToTonnesYr } from '../data/countyData'
+import { GIS, COUNTY_NAMES, RISK_SCORES, EMISSIONS_2021, getEmissions, mgdToTonnesYr } from '../data/countyData'
 
 // ─── Small reusable pieces ────────────────────────────────────────────────────
 
@@ -108,7 +109,7 @@ function OverviewChat() {
           <span className="text-clay-600 text-sm font-bold">AI</span>
         </div>
         <p className="text-sm font-medium text-foreground mb-1">Ask about this analysis</p>
-        <p className="text-xs text-[#737373] leading-relaxed">Use the suggested prompts below or type your own question about TWP emissions, county risk, or farmland exposure.</p>
+        <p className="text-sm text-[#737373] leading-relaxed">Use the suggested prompts below or type your own question about TWP emissions, county risk, or farmland exposure.</p>
       </div>
       <div className="shrink-0 px-3 pb-3 pt-2 space-y-2 border-t border-[#e5e5e5]">
         <div className="flex flex-wrap gap-1.5 mb-2">
@@ -145,13 +146,31 @@ function OverviewChat() {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function OverviewPage({ onHome }: { onHome: () => void }) {
-  const [tab, setTab] = useState<'overview' | 'harms' | 'interventions'>('overview')
+type OverviewTab = 'overview' | 'harms' | 'interventions'
+
+function tabFromPath(path: string): OverviewTab {
+  if (path === '/microplastics/harms') return 'harms'
+  if (path === '/microplastics/interventions') return 'interventions'
+  return 'overview'
+}
+
+export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHome: () => void; initialTab?: OverviewTab }) {
+  const [tab, setTab] = useState<OverviewTab>(initialTab)
   const [tabVisible, setTabVisible] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
 
-  function switchTab(t: typeof tab) {
+  useEffect(() => {
+    function onPop() {
+      setTab(tabFromPath(window.location.pathname))
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  function switchTab(t: OverviewTab) {
     if (t === tab) return
+    const path = t === 'overview' ? '/microplastics' : `/microplastics/${t}`
+    history.pushState(null, '', path)
     setTabVisible(false)
     setTimeout(() => {
       setTab(t)
@@ -167,32 +186,36 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
   const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
+  const [summaryExpanded, setSummaryExpanded] = useState(true)
 
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
 
-  // Computed statewide stats for the current year
+  // Computed statewide stats for the current year (risk scores scale with AADT)
   const stats = useMemo(() => {
-    let totalPm10 = 0, totalPm25 = 0
+    let totalPm10 = 0, totalPm25 = 0, topRiskCode = '', topRiskScore = 0
     Object.keys(GIS).forEach(co => {
       const e = getEmissions(co, year)
       totalPm10 += Math.max(0, e.pm10)
       totalPm25 += Math.max(0, e.pm25)
+      const base = RISK_SCORES[co] ?? 0
+      const base21 = EMISSIONS_2021[co]?.pm10
+      const score = base21 && base21 > 0 ? base * (e.pm10 / base21) : base
+      if (score > topRiskScore) { topRiskScore = score; topRiskCode = co }
     })
-    const topRiskCode = BY_RISK[0]
     return {
       pm10: mgdToTonnesYr(totalPm10),
       pm25: mgdToTonnesYr(totalPm25),
       topRisk: COUNTY_NAMES[topRiskCode] ?? topRiskCode,
-      topRiskScore: Math.round(RISK_SCORES[topRiskCode] ?? 0),
+      topRiskScore: Math.round(topRiskScore),
     }
   }, [year])
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="flex flex-col bg-background">
 
       {/* ── App Header ── */}
-      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs shrink-0 z-10">
+      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs sticky top-0 z-10">
         <button onClick={onHome} className="font-serif italic text-foreground text-xl font-semibold leading-6 shrink-0 hover:opacity-70 transition-opacity">
           Calx
         </button>
@@ -280,45 +303,36 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
       </div>
 
       {/* ── Body ── */}
-      <div className="flex-1 flex flex-col min-h-0 transition-opacity duration-150 ease-in-out" style={{ opacity: tabVisible ? 1 : 0 }}>
+      <div className="transition-opacity duration-150 ease-in-out" style={{ opacity: tabVisible ? 1 : 0 }}>
       {tab === 'harms' && (
-        <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
+        <main className="flex gap-2.5 px-5 py-5 min-h-[calc(100vh-2.75rem)]">
           <HarmsContent chatOpen={chatOpen} />
         </main>
       )}
       {tab === 'interventions' && (
-        <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
+        <main className="flex gap-2.5 px-5 py-5 min-h-[calc(100vh-2.75rem)]">
           <InterventionsContent chatOpen={chatOpen} />
         </main>
       )}
       {tab === 'overview' && (
-        <main className="flex-1 flex gap-2.5 px-5 py-5 min-h-0">
-          <div className="flex-1 flex flex-col gap-2.5 min-h-0 min-w-0">
+        <main className="flex gap-2.5 px-5 py-5">
+          <div className="flex-1 flex flex-col gap-2.5 min-w-0">
 
-            {/* ── Overview & Analysis ── */}
+            {/* ── Overview card ── */}
             <section className="bg-card rounded-lg shadow-sm shrink-0 relative">
-              {/* Collapsed header — only visible when collapsed */}
               {overviewCollapsed && (
                 <div className="flex items-center justify-between px-5 py-3">
                   <h2 className="font-serif text-xl font-semibold text-foreground leading-tight">TWP Analysis</h2>
-                  <button
-                    onClick={() => setOverviewCollapsed(false)}
-                    className="text-[#a3a3a3] hover:text-foreground transition-colors duration-200"
-                  >
+                  <button onClick={() => setOverviewCollapsed(false)} className="text-[#a3a3a3] hover:text-foreground transition-colors duration-200">
                     <ChevronDown size={20} />
                   </button>
                 </div>
               )}
-              {/* Collapsible body */}
               <div className={`grid transition-all duration-300 ease-in-out ${overviewCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}>
                 <div className="overflow-hidden">
                   <div className="relative flex items-stretch px-5 pr-10 py-4 gap-5">
-                    {/* Collapse button — upper right of card when expanded */}
                     {!overviewCollapsed && (
-                      <button
-                        onClick={() => setOverviewCollapsed(true)}
-                        className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-sm text-[#a3a3a3] hover:text-foreground transition-colors duration-200"
-                      >
+                      <button onClick={() => setOverviewCollapsed(true)} className="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-white shadow-sm text-[#a3a3a3] hover:text-foreground transition-colors duration-200">
                         <ChevronDown size={16} className="rotate-180" />
                       </button>
                     )}
@@ -336,6 +350,29 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                             <p className="text-xs text-[#737373] leading-4">Science Advisor · Calx Analyst</p>
                           </div>
                         </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-[#e5e5e5] flex flex-col gap-2">
+                        <p className="text-sm text-[#737373] leading-relaxed">
+                          California highways emit an estimated <strong className="text-foreground">922.3 t PM10</strong> and <strong className="text-foreground">98 t PM2.5</strong> annually. San Joaquin ranks first in risk — all top counties are Central Valley, where stable winds concentrate deposition on the same farmland year after year.
+                        </p>
+                        <div className={`grid transition-all duration-300 ease-in-out ${summaryExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                          <div className="overflow-hidden">
+                            <div className="flex flex-col gap-2 pt-1">
+                              <p className="text-sm text-[#737373] leading-relaxed">
+                                An estimated <strong className="text-foreground">$45.1B</strong> in ag value sits within 5km of California highways. Sutter leads farmland exposure at 82.5%, followed by Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%).
+                              </p>
+                              <p className="text-sm text-[#737373] leading-relaxed">
+                                LA County is the largest emitter at <strong className="text-foreground">192.3 t/yr</strong>. The 2020 lockdowns showed a <strong className="text-foreground">10.1% drop</strong> in emissions, validating the model. Traffic grows at +4.0% per decade without intervention.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setSummaryExpanded(e => !e)}
+                          className="text-sm text-clay-600 font-medium hover:text-clay-700 transition-colors self-start"
+                        >
+                          {summaryExpanded ? 'Show less' : 'Read more →'}
+                        </button>
                       </div>
                     </div>
 
@@ -366,16 +403,8 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
                     </Dialog.Root>
 
                     <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
-                    <div className="flex-1 min-w-0 columns-2 gap-6">
-                      <p className="text-base text-foreground leading-6 mb-3">
-                        California highways emit an estimated <strong>922.3 tonnes of PM10</strong> and <strong>98 tonnes of PM2.5</strong> in tire wear particles annually across <strong>6,442 road segments</strong>. San Joaquin County ranks first in combined risk (score: 6,103), followed by Sacramento, Fresno, Kern, and Solano — all Central Valley counties where prevailing winds are exceptionally stable (CV 7.2%), concentrating deposition on the same farmland year after year.
-                      </p>
-                      <p className="text-base text-foreground leading-6 mb-3">
-                        An estimated <strong>$45.1B</strong> in agricultural value sits within 5km of California highways. Sutter County leads farmland exposure at 82.5% of its ag land within the buffer, with Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%) close behind. PM10 settles on crops within 1–2km of the roadway; the finer PM2.5 fraction stays airborne and reaches farmworkers up to 5km away.
-                      </p>
-                      <p className="text-base text-foreground leading-6">
-                        Los Angeles County is the largest single emitter at <strong>192.3 t/yr</strong>, reflecting its high AADT on a dense highway network. The 2020 COVID lockdowns provided a natural experiment — a <strong>10.1% drop</strong> in emissions (≈59 tonnes avoided) that closely tracks traffic volume reductions, validating the emissions model. With statewide traffic growing at +4.0% per decade, loading pressure will continue to rise without targeted intervention.
-                      </p>
+                    <div className="flex-1 min-w-0 flex items-center">
+                      <img src={lifecycleChart} alt="TWP lifecycle cost by stage" className="w-full h-auto" />
                     </div>
                   </div>
                 </div>
@@ -383,7 +412,7 @@ export default function OverviewPage({ onHome }: { onHome: () => void }) {
             </section>
 
             {/* ── TWP Analysis ── */}
-            <section className="bg-card rounded-lg shadow-sm overflow-hidden flex-1 flex flex-col min-h-0">
+            <section className="bg-card rounded-lg shadow-sm overflow-hidden h-[calc(100vh-4.625rem)] flex flex-col">
 
               {/* Panel header */}
               <div className="border-b border-[#e5e5e5] flex items-center gap-3 px-4 py-2.5 shrink-0">

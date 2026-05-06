@@ -1,5 +1,24 @@
 # Calx — Changelog
 
+## [0.1.3] — 2026-04-30
+
+### Features & Improvements
+
+- **Radix UI** — installed `@radix-ui/react-dialog` and `@radix-ui/react-select`; replaced native `<select>` elements with `AppSelect`/`AppSelectItem` wrappers; styled to match design system; all Radix portals set `z-[9999]` to render above the Leaflet map
+- **Analyst bio dialog** — clicking Anup Sharma's name opens a Radix Dialog with larger photo, name (serif 3xl), role, and full bio; Esc key closes via Radix built-in; close button in top-right corner; header row separated from bio by border; overlay `bg-black/30`
+- **Settings drawer** — UserCircle icon in header opens a right-side slide-in panel (`w-72`, `translate-x-full` → `translate-x-0`, 300ms ease-in-out); backdrop overlay dismisses on click; icon turns clay when open
+- **Smooth page transitions** — `pageVisible` fade (200ms opacity) in `App.tsx`; all page swaps fade out then in
+- **Animated search placeholder** — landing page cycles 8 TWP-themed query strings every 3.5s with 400ms crossfade; hidden when input has focus or user has typed
+- **Dynamic risk scores & avg AADT** — Top 5 Risk Counties and Avg AADT in the sidebar now recompute per selected year using AADT-ratio scaling from `EMISSIONS_2021` baseline; `#1 Risk County` header stat is also year-dynamic
+- **CSS grid chat panel width transition** — `grid-cols-[0px]` ↔ `grid-cols-[240px]` with `overflow-hidden` gives smooth chat sidebar open/close without JavaScript measurement
+
+### Bug Fixes
+
+- Chat panels now stretch full height after transition — added `self-stretch` to outer grid wrapper and `h-full` to inner div and aside
+- Radix Select and Dialog portals set to `z-[9999]` to render above Leaflet map tiles
+- Analyst dialog close button required adding `relative` to card wrapper
+- Removed unused `yrLabel` variable from `CountySidebar.tsx`
+
 ## [0.1.2] — 2026-04-29
 
 ### Features & Improvements

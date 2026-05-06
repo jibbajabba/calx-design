@@ -14,6 +14,12 @@
 - [x] Live Leaflet emission map — 58-county markers, ramp/interface/convergence hotspot layers, county sidebar with statewide + drill-down views (2026-04-29)
 - [x] Collapsible overview card — CSS grid height trick, circle chevron button, instant hide on click (2026-04-29)
 - [x] AI chat UI polish — suggested prompt pills, empty state, updated typography across all three chat panels (2026-04-29)
+- [x] Radix UI — installed and wired Select (dropdowns) and Dialog (analyst bio); all portals z-[9999] above Leaflet (2026-04-30)
+- [x] Analyst bio dialog — Radix Dialog with photo, name, role, bio, close button, Esc support (2026-04-30)
+- [x] Settings drawer — right-side slide-in panel from UserCircle icon, theme toggle (2026-04-30)
+- [x] Smooth page transitions — opacity fade (200ms) on all page navigations (2026-04-30)
+- [x] Animated search placeholder — 8 query strings cycling with 400ms crossfade, hidden on focus (2026-04-30)
+- [x] Dynamic risk scores & avg AADT — year-aware using AADT ratio scaling; Top 5 Risk Counties resorts by year (2026-04-30)
 
 ## In Progress
 

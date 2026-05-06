@@ -239,6 +239,87 @@ export const shadows = {
 //   Inferred:  strokeDasharray="3 5"
 // Edge strength: Weak → strokeWidth 1.5 · Moderate → 2.5 · Strong → 4
 
+// --- Radix UI Components --------------------------------------
+
+// Project uses @radix-ui/react-dialog and @radix-ui/react-select.
+// All Radix portals MUST set z-[9999] to render above the Leaflet map (z default ~400).
+
+// AppSelect (custom wrapper around Radix Select):
+//   Trigger: flex items-center gap-1 text-xs text-[#404040] border border-[#d4d4d4]
+//            rounded-sm pl-2 pr-1.5 py-0.5 bg-card hover:bg-neutral-50 outline-none
+//            focus:border-[#a3a3a3] data-[state=open]:border-[#a3a3a3] cursor-pointer
+//   Portal wraps Content to escape stacking context.
+//   Content: bg-card rounded-lg shadow-md border border-[#e5e5e5] overflow-hidden
+//            z-[9999] max-h-72
+//   Item: text-xs text-[#404040] px-2.5 py-1.5 rounded
+//         data-[highlighted]:bg-neutral-100 data-[state=checked]:font-medium
+//         ItemIndicator shows Check icon in clay-600 when selected
+//
+// Analyst Bio Dialog (Radix Dialog):
+//   Overlay: fixed inset-0 bg-black/30 z-[9998]
+//   Content: fixed inset-0 z-[9999] flex items-center justify-center p-6 outline-none
+//   Card:    bg-card rounded-lg shadow-xl p-6 w-full max-w-md relative
+//            Header row: flex items-center gap-4 pb-4 border-b border-[#e5e5e5] mb-5
+//            Photo: w-16 h-16 rounded-full object-cover shrink-0
+//            Name:  font-serif text-3xl font-semibold  (Dialog.Title)
+//            Role:  text-base text-[#737373]           (Dialog.Description)
+//            Close: X icon in absolute top-4 right-4, text-[#737373] hover:text-foreground
+//   ESC closes via Radix built-in keyboard handling.
+
+// --- Settings Drawer ------------------------------------------
+
+// Right-side slide-in drawer for theme/config settings.
+// Triggered by UserCircle icon in header (settingsOpen state in OverviewPage).
+//
+// Backdrop:  fixed inset-0 z-40 (click to dismiss)
+// Panel:     fixed top-11 right-0 bottom-0 w-72 bg-card shadow-xl z-50 flex flex-col
+//            translate-x-full (closed) → translate-x-0 (open)
+//            transition-transform duration-300 ease-in-out
+// Header:    px-5 py-4 border-b border-[#e5e5e5] flex items-center justify-between
+// Body:      overflow-y-auto flex-1 px-5 py-4 space-y-6
+// Icon active state: text-clay-600 (when settingsOpen); text-[#404040] hover:text-foreground (closed)
+
+// --- Page Transitions -----------------------------------------
+
+// Fade-out/in on page navigation. Managed by App.tsx.
+//   pageVisible state: true (opaque) / false (transparent)
+//   Wrapper div: transition-opacity duration-200 ease-in-out
+//   navigate(): sets pageVisible=false → after 200ms sets new page + pageVisible=true
+//   All page views are wrapped in a div with the fade props.
+
+// --- Animated Search Placeholder ------------------------------
+
+// Landing page search input cycles through query placeholders with crossfade.
+//   PLACEHOLDERS array: 8 harm-related query strings
+//   phIdx: current placeholder index
+//   phVisible: opacity boolean (false during transition)
+//   Cycle: every 3500ms, fade out (400ms), advance index, fade in
+//   Hidden when: query has value OR inputFocused is true
+//   Overlay span: absolute inset-0 flex items-center text-sm text-[#737373]
+//                 pointer-events-none transition-opacity duration-400
+
+// --- Dynamic Year Data ----------------------------------------
+
+// Stats, risk scores, and avg AADT all recompute when the year dropdown changes.
+//
+// getEmissions(co, year) in countyData.ts:
+//   - year='2021': returns EMISSIONS_2021[co] as-is
+//   - year='avg': scales by (mean AADT across all trend years) / avg_aadt_2021
+//   - otherwise: scales by COUNTY_AADT_TREND[co][year] / EMISSIONS_2021[co].avg_aadt
+//   - Falls back to 2021 data if trend entry is missing.
+//
+// Risk score formula (derived):
+//   RISK_SCORES[co] = EMISSIONS_2021[co].pm10 * (GIS[co].b5_pct / 100) * WIND[co].avg_wind * 1e-4
+//   Dynamic version: RISK_SCORES[co] * (getEmissions(co, year).pm10 / EMISSIONS_2021[co].pm10)
+//   Top-5 risk counties sorted by dynamic score each render.
+//
+// Avg AADT for year: mean of getEmissions(co, year).avg_aadt across all GIS counties.
+//
+// Statewide PM10/PM2.5: sum of mgdToTonnesYr(getEmissions(co, year).pm10) across all GIS counties.
+// NOTE: 2023 values are similar to 2021 because 2023 AADT ≈ 2021 AADT for most counties.
+// Prototype divergence at 2023 (545 t/yr vs ~947) requires year-specific fleet factors not
+// in current data — AADT scaling alone cannot reproduce this.
+
 // --- Breakpoints ----------------------------------------------
 
 // Uses Tailwind default breakpoints. No custom overrides.

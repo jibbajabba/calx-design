@@ -21,6 +21,8 @@ An AI chat panel (toggled via the ✦ sparkle button) provides contextual analys
 | Framework | React 19 + TypeScript 6 |
 | Build | Vite 8 |
 | Styling | Tailwind CSS v4 via `@tailwindcss/vite` |
+| UI Primitives | Radix UI (`@radix-ui/react-dialog`, `@radix-ui/react-select`) |
+| Map | Leaflet + react-leaflet |
 | Icons | lucide-react |
 | Fonts | Source Serif 4, Source Sans 3, Roboto Mono (Google Fonts) |
 
