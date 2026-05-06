@@ -23,7 +23,6 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
   const [tabVisible, setTabVisible] = useState(true)
   const [chatOpen, setChatOpen] = useState(false)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
-  const [summaryExpanded, setSummaryExpanded] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
   const [year, setYear] = useState(2026)

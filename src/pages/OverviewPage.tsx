@@ -186,7 +186,6 @@ export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHo
   const [mapLayer, setMapLayer] = useState<MapLayerTab>('emissions')
   const [selectedCounty, setSelectedCounty] = useState<string | null>(null)
   const [overviewCollapsed, setOverviewCollapsed] = useState(false)
-  const [summaryExpanded, setSummaryExpanded] = useState(true)
 
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
