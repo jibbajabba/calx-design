@@ -62,8 +62,8 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
         {/* Title bar */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-[#e5e5e5] shrink-0">
           <p className="flex-1 leading-6">
-            <span className="font-serif text-xl font-semibold text-foreground">Apparel Analysis,</span>
-            <span className="text-xl text-foreground"> Intervention Modeling</span>
+            <span className="font-serif text-[30px] font-semibold text-foreground leading-tight">Apparel Analysis,</span>
+            <span className="text-[30px] text-foreground leading-tight"> Intervention Modeling</span>
           </p>
           <button className="text-[#737373] hover:text-foreground transition-colors">
             <Download size={16} />
@@ -75,7 +75,7 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
 
           {/* Left: Intervention Modeling */}
           <div className="w-[360px] shrink-0 pr-8">
-            <p className="text-sm text-[#737373] mb-3">Intervention Modeling</p>
+            <p className="text-3xl font-semibold text-foreground mb-3">Intervention Modeling</p>
             <div className="grid grid-cols-2 gap-2 mb-2">
               {INTERVENTIONS.map((iv, i) => (
                 <button
@@ -88,14 +88,14 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
                   }`}
                 >
                   <span className="shrink-0 mt-0.5">{iv.icon}</span>
-                  <span className="text-xs font-medium leading-4">{iv.label}</span>
+                  <span className="text-lg font-medium leading-4">{iv.label}</span>
                 </button>
               ))}
             </div>
             {DETAILS.map(row => (
               <div key={row.label} className="flex items-center justify-between py-2.5 border-t border-[#e5e5e5]">
-                <span className="text-sm text-[#404040]">{row.label}</span>
-                <span className={`text-sm text-foreground ${row.bold ? 'font-semibold' : ''}`}>{row.value}</span>
+                <span className="text-lg text-[#404040]">{row.label}</span>
+                <span className="text-lg text-foreground font-semibold">{row.value}</span>
               </div>
             ))}
           </div>
@@ -105,31 +105,31 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
 
           {/* Right: Summary of Key Changes */}
           <div className="flex-1 min-w-0 pl-8">
-            <p className="text-sm text-[#737373] mb-3">Summary of Key Changes</p>
+            <p className="text-3xl font-semibold text-foreground mb-3">Summary of Key Changes</p>
             <div className="flex border border-[#e5e5e5] rounded-lg overflow-hidden mb-6">
               {SUMMARY_STATS.map((stat, i) => (
                 <div key={i} className="flex-1 px-4 py-3 border-r border-[#e5e5e5] last:border-r-0">
-                  <p className="text-sm text-[#737373] mb-1">{stat.label}</p>
+                  <p className="text-lg font-semibold text-[#737373] mb-1">{stat.label}</p>
                   <div className="flex items-center gap-1 mb-0.5">
                     {stat.positive
                       ? <Check size={12} className="text-green-600 shrink-0" />
                       : <TrendingUp size={12} className="text-orange-500 shrink-0" />
                     }
-                    <span className={`text-2xl font-bold leading-none ${stat.positive ? 'text-green-600' : 'text-orange-500'}`}>
+                    <span className={`text-3xl font-bold leading-none ${stat.positive ? 'text-green-600' : 'text-orange-500'}`}>
                       {stat.value}
                     </span>
                   </div>
-                  {stat.sublabel && <p className="text-[10px] text-[#737373]">{stat.sublabel}</p>}
+                  {stat.sublabel && <p className="text-lg text-[#737373]">{stat.sublabel}</p>}
                 </div>
               ))}
             </div>
 
-            <p className="text-sm text-[#737373] mb-2">Tradeoffs &amp; Unintended Consequences</p>
+            <p className="text-3xl font-semibold text-foreground mb-3">Tradeoffs &amp; Unintended Consequences</p>
             {TRADEOFFS.map((t, i) => (
               <div key={i} className="flex items-center gap-2 py-2.5 border-t border-[#e5e5e5]">
                 <AlertTriangle size={13} className="text-orange-400 shrink-0" />
-                <span className="text-sm text-[#404040] flex-1">{t.label}</span>
-                {t.value && <span className="text-sm text-[#404040]">{t.value}</span>}
+                <span className="text-lg text-[#404040] flex-1">{t.label}</span>
+                {t.value && <span className="text-lg text-[#404040]">{t.value}</span>}
               </div>
             ))}
           </div>
@@ -143,17 +143,17 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
 
           {/* Left: Baseline */}
           <div className="flex-1 flex flex-col pr-8">
-            <p className="text-sm text-foreground mb-4">Baseline (2030) - No Intervention</p>
+            <p className="text-3xl font-semibold text-foreground mb-4">Baseline (2030) - No Intervention</p>
             {BASELINE.map(m => (
               <div key={m.label} className="flex items-center justify-between py-3 border-b border-[#e5e5e5]">
-                <span className="text-sm text-[#404040]">{m.label}</span>
-                <span className={`text-sm font-medium ${m.color}`}>{m.value}</span>
+                <span className="text-lg text-[#404040]">{m.label}</span>
+                <span className={`text-lg font-medium ${m.color}`}>{m.value}</span>
               </div>
             ))}
             <div className="mt-4 bg-red-50 rounded-lg p-5">
               <p className="text-[40px] font-bold text-foreground leading-none mb-2">$4.1B</p>
-              <p className="text-sm font-semibold text-foreground mb-1">Net Value</p>
-              <p className="text-xs text-[#737373] italic">Projected trajectory</p>
+              <p className="text-lg font-semibold text-foreground mb-1">Net Value</p>
+              <p className="text-lg text-[#737373] italic">Projected trajectory</p>
             </div>
           </div>
 
@@ -162,27 +162,26 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
 
           {/* Right: With Intervention */}
           <div className="flex-1 flex flex-col pl-8">
-            <p className="text-sm text-foreground mb-4">With Intervention (2030)</p>
+            <p className="text-3xl font-semibold text-foreground mb-4">With Intervention (2030)</p>
             {WITH_INTERVENTION.map(m => (
               <div key={m.label} className="flex items-center justify-between py-3 border-b border-[#e5e5e5]">
-                <span className="text-sm text-[#404040]">{m.label}</span>
-                <span className={`text-sm font-medium ${m.color}`}>{m.value}</span>
+                <span className="text-lg text-[#404040]">{m.label}</span>
+                <span className={`text-lg font-medium ${m.color}`}>{m.value}</span>
               </div>
             ))}
             <div className="mt-4 bg-green-50 rounded-lg p-5">
               <p className="text-[40px] font-bold text-foreground leading-none mb-2">+$5.8B</p>
-              <p className="text-sm font-semibold text-foreground mb-1">Net Value</p>
-              <p className="text-xs text-[#737373] italic">After wage floor + liability</p>
+              <p className="text-lg font-semibold text-foreground mb-1">Net Value</p>
+              <p className="text-lg text-[#737373] italic">After wage floor + liability</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Chat sidebar ── */}
-      <div className={`grid transition-all duration-300 ease-in-out self-stretch ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
-      <div className="overflow-hidden h-full">
-      <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col h-full">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
+      <div className={`grid transition-all duration-300 ease-in-out shrink-0 ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}><div className="w-[240px]" /></div>
+      <aside className={`fixed top-11 right-0 bottom-0 w-[240px] bg-card border-l border-[#e5e5e5] flex flex-col transition-transform duration-300 ease-in-out z-30 ${chatOpen ? 'translate-x-0' : 'translate-x-[260px]'}`}>
+        <div className="flex items-center justify-between px-4 py-3 border-y border-[#e5e5e5] shrink-0 bg-neutral-50">
           <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Intervention Analysis Chat</p>
           <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
         </div>
@@ -221,8 +220,6 @@ export default function ApparelInterventionsContent({ chatOpen }: { chatOpen: bo
           </div>
         </div>
       </aside>
-      </div>
-      </div>
     </>
   )
 }

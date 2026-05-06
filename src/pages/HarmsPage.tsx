@@ -6,7 +6,7 @@ export default function HarmsContent({ chatOpen }: { chatOpen: boolean }) {
       {/* ── Main graph panel ── */}
       <section className="bg-card rounded-lg shadow-sm flex-1 flex flex-col min-h-0">
         <div className="px-5 py-3 border-b border-[#e5e5e5] shrink-0">
-          <p className="font-serif text-xl font-semibold text-foreground leading-6">
+          <p className="font-serif text-[30px] font-semibold text-foreground leading-tight">
             Tire Wear Particle Analysis: Causal pathways — California
           </p>
         </div>
@@ -21,10 +21,9 @@ export default function HarmsContent({ chatOpen }: { chatOpen: boolean }) {
       </section>
 
       {/* ── Chat sidebar ── */}
-      <div className={`grid transition-all duration-300 ease-in-out self-stretch ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
-        <div className="overflow-hidden h-full">
-          <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col h-full">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
+      <div className={`grid transition-all duration-300 ease-in-out shrink-0 ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}><div className="w-[240px]" /></div>
+      <aside className={`fixed top-11 right-0 bottom-0 w-[240px] bg-card border-l border-[#e5e5e5] flex flex-col transition-transform duration-300 ease-in-out z-30 ${chatOpen ? 'translate-x-0' : 'translate-x-[260px]'}`}>
+            <div className="flex items-center justify-between px-4 py-3 border-y border-[#e5e5e5] shrink-0 bg-neutral-50">
               <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Harms Analysis Chat</p>
               <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
             </div>
@@ -62,9 +61,7 @@ export default function HarmsContent({ chatOpen }: { chatOpen: boolean }) {
                 </button>
               </div>
             </div>
-          </aside>
-        </div>
-      </div>
+      </aside>
     </>
   )
 }

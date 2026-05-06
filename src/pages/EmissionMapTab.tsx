@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Map as LeafletMap, LayerGroup, CircleMarker, Marker } from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import {
@@ -21,6 +21,7 @@ interface Props {
 }
 
 export default function EmissionMapTab({ year, buffer, hotspot, filter, selectedCounty, onSelectCounty }: Props) {
+  const [mapReady, setMapReady] = useState(false)
   const mapRef = useRef<LeafletMap | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const countyLayerRef = useRef<LayerGroup | null>(null)
@@ -48,6 +49,7 @@ export default function EmissionMapTab({ year, buffer, hotspot, filter, selected
       }).addTo(map)
       L.control.zoom({ position: 'bottomleft' }).addTo(map)
       mapRef.current = map
+      setMapReady(true)
 
       countyLayerRef.current = L.layerGroup().addTo(map)
       rampLayerRef.current = L.layerGroup()
@@ -62,7 +64,7 @@ export default function EmissionMapTab({ year, buffer, hotspot, filter, selected
 
   // ── Rebuild county markers when year/buffer/filter change ─────────────────
   useEffect(() => {
-    if (!mapRef.current || !countyLayerRef.current) return
+    if (!mapReady || !mapRef.current || !countyLayerRef.current) return
     import('leaflet').then(L => {
       countyLayerRef.current!.clearLayers()
       markersRef.current = {}
@@ -106,11 +108,11 @@ export default function EmissionMapTab({ year, buffer, hotspot, filter, selected
       })
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, buffer, filter])
+  }, [mapReady, year, buffer, filter])
 
   // ── Rebuild hotspot layers when year changes ───────────────────────────────
   useEffect(() => {
-    if (!mapRef.current) return
+    if (!mapReady || !mapRef.current) return
     import('leaflet').then(L => {
       rampLayerRef.current?.clearLayers()
       interfaceLayerRef.current?.clearLayers()
@@ -171,11 +173,11 @@ export default function EmissionMapTab({ year, buffer, hotspot, filter, selected
       })
     })
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year])
+  }, [mapReady, year])
 
   // ── Toggle hotspot layers ──────────────────────────────────────────────────
   useEffect(() => {
-    if (!mapRef.current) return
+    if (!mapReady || !mapRef.current) return
     const map = mapRef.current
     const ramp = rampLayerRef.current
     const iface = interfaceLayerRef.current
@@ -187,7 +189,7 @@ export default function EmissionMapTab({ year, buffer, hotspot, filter, selected
     else if (hotspot === 'ramp') { map.addLayer(ramp); map.removeLayer(iface); map.removeLayer(conv) }
     else if (hotspot === 'interface') { map.removeLayer(ramp); map.addLayer(iface); map.removeLayer(conv) }
     else if (hotspot === 'convergence') { map.removeLayer(ramp); map.removeLayer(iface); map.addLayer(conv) }
-  }, [hotspot])
+  }, [mapReady, hotspot])
 
   // ── Highlight selected county ──────────────────────────────────────────────
   useEffect(() => {

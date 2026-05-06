@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900px" height="515px" viewBox="0 0 900 515" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>apparel-lifecycle-chart</title>
+    <g id="apparel-lifecycle-chart" stroke="none" fill="none" fill-rule="evenodd" stroke-width="1">
+        <g id="Group" transform="translate(0, -46)">
+            <text id="cost" fill="#888888" fill-rule="nonzero" transform="translate(875.5, 188) rotate(90) translate(-875.5, -188)" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="866.5" y="191.5">cost</tspan>
+            </text>
+            <line x1="80" y1="248" x2="840" y2="248" id="Path" stroke="#BBBBBB" fill="#000000" stroke-dasharray="5"></line>
+            <rect id="Rectangle" fill="#C0503A" x="80" y="254" width="10" height="10" rx="1"></rect>
+            <text id="today" fill="#C0503A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="95" y="263">today</tspan>
+            </text>
+            <rect id="Rectangle" fill="#3D4E8A" x="80" y="268" width="10" height="10" rx="1"></rect>
+            <text id="2026–28" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="95" y="277">2026–28</tspan>
+            </text>
+            <rect id="Rectangle" fill="#3D4E8A" opacity="0.85" x="126" y="205" width="68" height="43" rx="2"></rect>
+            <rect id="Rectangle" fill="#C0503A" x="134" y="239" width="52" height="9" rx="2"></rect>
+            <text id="$1–2B" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="145.5" y="201">$1–2B</tspan>
+            </text>
+            <text id="~$0.3B" fill="#FFFFFF" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="143" y="236">~$0.3B</tspan>
+            </text>
+            <rect id="Rectangle" fill="#3D4E8A" opacity="0.85" x="262" y="62" width="76" height="186" rx="2"></rect>
+            <rect id="Rectangle" fill="#C0503A" x="272" y="244" width="56" height="4" rx="1"></rect>
+            <text id="$4–9B" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="284.5" y="58">$4–9B</tspan>
+            </text>
+            <text id="~$0" fill="#C0503A" fill-rule="nonzero" font-family="Georgia" font-size="9.5" font-weight="normal">
+                <tspan x="291" y="265">~$0</tspan>
+            </text>
+            <line x1="352" y1="68" x2="352" y2="244" id="Path" stroke="#C0503A" stroke-width="0.8" fill="#000000" stroke-dasharray="3"></line>
+            <text id="accountability" fill="#C0503A" fill-rule="nonzero" font-family="Georgia" font-size="9" font-weight="normal">
+                <tspan x="356" y="100">accountability</tspan>
+            </text>
+            <text id="gap" fill="#C0503A" fill-rule="nonzero" font-family="Georgia" font-size="9" font-weight="normal">
+                <tspan x="356" y="111">gap</tspan>
+            </text>
+            <path d="M352,68 L347,75 M352,68 L357,75" id="Shape" stroke="#C0503A" stroke-width="0.8"></path>
+            <path d="M352,244 L347,237 M352,244 L357,237" id="Shape" stroke="#C0503A" stroke-width="0.8"></path>
+            <rect id="Rectangle" fill="#3D4E8A" opacity="0.85" x="406" y="191" width="68" height="57" rx="2"></rect>
+            <rect id="Rectangle" fill="#C0503A" x="414" y="234" width="52" height="14" rx="2"></rect>
+            <text id="$1–3B" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="425.5" y="187">$1–3B</tspan>
+            </text>
+            <text id="~$0.5B" fill="#FFFFFF" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="423" y="231">~$0.5B</tspan>
+            </text>
+            <rect id="Rectangle" fill="#3D4E8A" opacity="0.85" x="566" y="205" width="68" height="43" rx="2"></rect>
+            <rect id="Rectangle" fill="#C0503A" x="574" y="239" width="52" height="9" rx="2"></rect>
+            <text id="$1–2B" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="585.5" y="201">$1–2B</tspan>
+            </text>
+            <text id="~$0.3B" fill="#FFFFFF" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="583" y="236">~$0.3B</tspan>
+            </text>
+            <rect id="Rectangle" fill="#3D4E8A" opacity="0.85" x="724" y="148" width="68" height="100" rx="2"></rect>
+            <rect id="Rectangle" fill="#C0503A" x="732" y="237" width="52" height="11" rx="2"></rect>
+            <text id="$2–5B" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="745" y="144">$2–5B</tspan>
+            </text>
+            <text id="~$0.4B" fill="#FFFFFF" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="743" y="234">~$0.4B</tspan>
+            </text>
+            <line x1="80" y1="290" x2="840" y2="290" id="Path" stroke="#888888" fill="#000000"></line>
+            <polygon id="Path" fill="#888888" points="840 287 848 290 840 293"></polygon>
+            <line x1="160" y1="287" x2="160" y2="295" id="Path" stroke="#888888" stroke-width="0.8" fill="#000000"></line>
+            <line x1="300" y1="287" x2="300" y2="295" id="Path" stroke="#888888" stroke-width="0.8" fill="#000000"></line>
+            <line x1="440" y1="287" x2="440" y2="295" id="Path" stroke="#888888" stroke-width="0.8" fill="#000000"></line>
+            <line x1="600" y1="287" x2="600" y2="295" id="Path" stroke="#888888" stroke-width="0.8" fill="#000000"></line>
+            <line x1="760" y1="287" x2="760" y2="295" id="Path" stroke="#888888" stroke-width="0.8" fill="#000000"></line>
+            <text id="stage" fill="#888888" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="862" y="294">stage</tspan>
+            </text>
+            <text id="Raw-materials" fill="#222222" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="12" font-weight="bold">
+                <tspan x="115" y="310">Raw materials</tspan>
+            </text>
+            <text id="Cotton-·-synthetic-fiber" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="109.5" y="325">Cotton · synthetic fiber</tspan>
+            </text>
+            <text id="Factory-production" fill="#222222" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="12" font-weight="bold">
+                <tspan x="240" y="310">Factory production</tspan>
+            </text>
+            <text id="Cut-·-sew-·-trim" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="266.5" y="325">Cut · sew · trim</tspan>
+            </text>
+            <text id="Brand-/-compliance" fill="#222222" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="12" font-weight="bold">
+                <tspan x="379" y="310">Brand / compliance</tspan>
+            </text>
+            <text id="Audit-·-logistics" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="405.5" y="325">Audit · logistics</tspan>
+            </text>
+            <text id="Retail-/-consumer" fill="#222222" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="12" font-weight="bold">
+                <tspan x="544.5" y="310">Retail / consumer</tspan>
+            </text>
+            <text id="Brand-·-end-buyer" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="560" y="325">Brand · end buyer</tspan>
+            </text>
+            <text id="End-of-life" fill="#222222" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="12" font-weight="bold">
+                <tspan x="728" y="310">End of life</tspan>
+            </text>
+            <text id="Landfill-·-incineration" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="711.5" y="325">Landfill · incineration</tspan>
+            </text>
+            <text id="Worker" fill="#C0503A" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="9.5" font-weight="bold">
+                <tspan x="42" y="375">Worker</tspan>
+            </text>
+            <text id="harm" fill="#C0503A" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="9.5" font-weight="bold">
+                <tspan x="42" y="388">harm</tspan>
+            </text>
+            <text id="share" fill="#888888" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="862" y="380">share</tspan>
+            </text>
+            <circle id="Oval" fill="#C0503A" opacity="0.7" cx="152" cy="376" r="8"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.45" cx="170" cy="381" r="5"></circle>
+            <text id="~8%" fill="#555555" fill-rule="nonzero" font-family="Georgia" font-size="11" font-weight="normal">
+                <tspan x="148.5" y="400">~8%</tspan>
+            </text>
+            <circle id="Oval" fill="#C0503A" opacity="0.8" cx="283" cy="368" r="26"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.6" cx="313" cy="374" r="16"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.5" cx="298" cy="390" r="10"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.45" cx="276" cy="390" r="7"></circle>
+            <text id="~64%" fill="#555555" fill-rule="nonzero" font-family="Georgia" font-size="11" font-weight="normal">
+                <tspan x="285.5" y="412">~64%</tspan>
+            </text>
+            <circle id="Oval" fill="#C0503A" opacity="0.55" cx="440" cy="380" r="4"></circle>
+            <text id="~4%" fill="#555555" fill-rule="nonzero" font-family="Georgia" font-size="11" font-weight="normal">
+                <tspan x="428.5" y="400">~4%</tspan>
+            </text>
+            <circle id="Oval" fill="#C0503A" opacity="0.68" cx="592" cy="376" r="9"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.45" cx="610" cy="382" r="5"></circle>
+            <text id="~10%" fill="#555555" fill-rule="nonzero" font-family="Georgia" font-size="11" font-weight="normal">
+                <tspan x="586" y="400">~10%</tspan>
+            </text>
+            <circle id="Oval" fill="#C0503A" opacity="0.68" cx="750" cy="373" r="12"></circle>
+            <circle id="Oval" fill="#C0503A" opacity="0.48" cx="771" cy="379" r="7"></circle>
+            <text id="~14%" fill="#555555" fill-rule="nonzero" font-family="Georgia" font-size="11" font-weight="normal">
+                <tspan x="746" y="400">~14%</tspan>
+            </text>
+            <line x1="80" y1="430" x2="840" y2="430" id="Path" stroke="#DDDDDD" stroke-width="0.8" fill="#000000"></line>
+            <text id="total" fill="#888888" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="862" y="470">total</tspan>
+            </text>
+            <text id="~$1.5B-/-yr" fill="#C0503A" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="14" font-weight="bold">
+                <tspan x="160.5" y="460">~$1.5B / yr</tspan>
+            </text>
+            <text id="today,-priced-cost" fill="#C0503A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="161" y="476">today, priced cost</tspan>
+            </text>
+            <text id="mostly-audit-&amp;-compliance-fees" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="131" y="490">mostly audit &amp; compliance fees</tspan>
+            </text>
+            <line x1="310" y1="464" x2="530" y2="464" id="Path" stroke="#888888" stroke-width="1.2" fill="#000000"></line>
+            <polygon id="Path" fill="#888888" points="530 461 538 464 530 467"></polygon>
+            <text id="6–14×-growth" fill="#888888" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="388.5" y="458">6–14× growth</tspan>
+            </text>
+            <text id="$9–21B-/-yr" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia-Bold, Georgia" font-size="14" font-weight="bold">
+                <tspan x="618.5" y="460">$9–21B / yr</tspan>
+            </text>
+            <text id="2026–28,-total-priced" fill="#3D4E8A" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="611.5" y="476">2026–28, total priced</tspan>
+            </text>
+            <text id="binding-liability-+-regulation" fill="#666666" fill-rule="nonzero" font-family="Georgia" font-size="10" font-weight="normal">
+                <tspan x="596.5" y="490">binding liability + regulation</tspan>
+            </text>
+            <line x1="40" y1="516" x2="840" y2="516" id="Path" stroke="#DDDDDD" stroke-width="0.8" fill="#000000"></line>
+            <text id="64%-of-worker-harm-occurs-at-the-factory-stage-—-but-that-stage-carries-~$0-of-priced-brand-cost-today." fill="#333333" fill-rule="nonzero" font-family="Georgia" font-size="10.5" font-weight="normal">
+                <tspan x="40" y="533">64% of worker harm occurs at the factory stage — but that stage carries ~$0 of priced brand cost today.</tspan>
+            </text>
+            <text id="By-2028-it-carries-the-largest-cost-share.-That-gap-is-the-accountability-gap." fill="#333333" fill-rule="nonzero" font-family="Georgia" font-size="10.5" font-weight="normal">
+                <tspan x="40" y="549">By 2028 it carries the largest cost share. That gap is the accountability gap.</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

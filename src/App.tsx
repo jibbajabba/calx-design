@@ -168,14 +168,14 @@ export default function App() {
                     onClick={() => navigate('microplastics')}
                     className="flex items-center gap-2 bg-[#fafafa] border border-[#d4d4d4] text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-2xs hover:bg-card transition-colors"
                   >
-                    <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-neutral-300 shrink-0" />
                     Microplastics and tire wear in California
                   </button>
                   <button
                     onClick={() => navigate('apparel')}
                     className="flex items-center gap-2 bg-[#fafafa] border border-[#d4d4d4] text-foreground text-sm font-medium px-4 py-2 rounded-full shadow-2xs hover:bg-card transition-colors"
                   >
-                    <span className="w-2 h-2 rounded-full bg-orange-400 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-neutral-300 shrink-0" />
                     Apparel and labor harm in Bangladesh
                   </button>
                 </div>

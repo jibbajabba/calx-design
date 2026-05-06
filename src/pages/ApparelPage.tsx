@@ -1,59 +1,16 @@
 import { useState, useEffect } from 'react'
-import type { ReactNode } from 'react'
 import { LayoutGrid, AlertTriangle, SlidersHorizontal, Sparkles, UserCircle, ChevronDown, X, Check } from 'lucide-react'
 import * as Dialog from '@radix-ui/react-dialog'
+import apparelLifecycleChart from '../assets/apparel-lifecycle-chart.svg'
 import ApparelHarmsContent from './ApparelHarmsPage'
 import ApparelInterventionsContent from './ApparelInterventionsPage'
 import BangladeshMap from './BangladeshMap'
 
 // ─── Small reusable pieces ────────────────────────────────────────────────────
 
-function MeasuredBadge() {
-  return <span className="bg-green-50 text-green-600 text-[9px] font-semibold tracking-wider whitespace-nowrap px-1.5 py-0.5 rounded">MEASURED</span>
-}
-
-function DerivedBadge() {
-  return <span className="bg-orange-50 text-orange-500 text-[9px] font-semibold tracking-wider whitespace-nowrap px-1.5 py-0.5 rounded">DERIVED</span>
-}
-
-interface StatMetricProps {
-  label: string
-  badge: 'measured' | 'derived'
-  value: ReactNode
-  description: string
-}
-
-function StatMetric({ label, badge, value, description }: StatMetricProps) {
-  return (
-    <div className="border-l border-[#e5e5e5] first:border-l-0 flex flex-col gap-0.5 px-4 py-3 flex-1 min-w-0">
-      <div className="flex items-center gap-1.5 flex-wrap">
-        <p className="text-[13px] font-semibold text-[#737373] tracking-widest uppercase leading-none">{label}</p>
-        {badge === 'measured' ? <MeasuredBadge /> : <DerivedBadge />}
-      </div>
-      <div className="text-[26px] font-bold leading-tight">{value}</div>
-      <p className="text-[10px] text-[#737373] leading-tight">{description}</p>
-    </div>
-  )
-}
-
-function MapTab({ label, dotColor, active = false, onClick }: { label: string; dotColor?: string; active?: boolean; onClick?: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-1.5 px-3 py-2 text-xs whitespace-nowrap transition-colors ${
-        active ? 'border-b-2 border-foreground text-foreground font-medium' : 'text-[#737373] hover:bg-neutral-200 hover:text-foreground'
-      }`}
-    >
-      {dotColor && <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: dotColor }} />}
-      {label}
-    </button>
-  )
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 type ApparelTab = 'overview' | 'harms' | 'interventions'
-type MapView = 'factory-density' | 'water-stress' | 'labor-risk'
 
 function tabFromPath(path: string): ApparelTab {
   if (path === '/apparel/harms') return 'harms'
@@ -69,8 +26,7 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
   const [summaryExpanded, setSummaryExpanded] = useState(true)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [theme, setTheme] = useState<'wireframe' | 'branded'>('wireframe')
-  const [mapView, setMapView] = useState<MapView>('factory-density')
-  const [activeMapTab, setActiveMapTab] = useState('map')
+  const [year, setYear] = useState(2026)
 
   useEffect(() => {
     function onPop() {
@@ -92,10 +48,10 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
   }
 
   return (
-    <div className="flex flex-col bg-background">
+    <div className="flex flex-col bg-background pt-11">
 
       {/* ── App Header ── */}
-      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs sticky top-0 z-10">
+      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs fixed top-0 left-0 right-0 z-10">
         <button onClick={onHome} className="font-serif italic text-foreground text-xl font-semibold leading-6 shrink-0 hover:opacity-70 transition-opacity">
           Calx
         </button>
@@ -230,24 +186,12 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
                         <p className="text-sm text-[#737373] leading-relaxed">
                           Bangladesh is the world's 2nd largest garment exporter, shipping <strong className="text-foreground">$42.1B</strong> annually from <strong className="text-foreground">3,500+</strong> factories employing <strong className="text-foreground">4.1 million</strong> workers — 80% women. Factory concentration in Dhaka's export processing zones makes this the densest apparel production corridor in the world.
                         </p>
-                        <div className={`grid transition-all duration-300 ease-in-out ${summaryExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                          <div className="overflow-hidden">
-                            <div className="flex flex-col gap-2 pt-1">
-                              <p className="text-sm text-[#737373] leading-relaxed">
-                                An estimated <strong className="text-foreground">$8.9B</strong> in annual external costs — chemical contamination, healthcare burden, lost productivity — are borne by communities, not brands. The average garment worker wage represents just <strong className="text-foreground">3% of retail price</strong>, while brand operating margins average 60%.
-                              </p>
-                              <p className="text-sm text-[#737373] leading-relaxed">
-                                The 2013 Rana Plaza collapse (1,134 deaths) demonstrated systemic structural failure, yet <strong className="text-foreground">62% of tier-2 suppliers</strong> remain unaudited by major sourcing brands. Without binding liability frameworks, the cost gap between harm and accountability will widen as export volumes grow at +6%/yr.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setSummaryExpanded(e => !e)}
-                          className="text-sm text-clay-600 font-medium hover:text-clay-700 transition-colors self-start"
-                        >
-                          {summaryExpanded ? 'Show less' : 'Read more →'}
-                        </button>
+                        <p className="text-sm text-[#737373] leading-relaxed">
+                          An estimated <strong className="text-foreground">$8.9B</strong> in annual external costs — chemical contamination, healthcare burden, lost productivity — are borne by communities, not brands. The average garment worker wage represents just <strong className="text-foreground">3% of retail price</strong>, while brand operating margins average 60%.
+                        </p>
+                        <p className="text-sm text-[#737373] leading-relaxed">
+                          The 2013 Rana Plaza collapse (1,134 deaths) demonstrated systemic structural failure, yet <strong className="text-foreground">62% of tier-2 suppliers</strong> remain unaudited by major sourcing brands. Without binding liability frameworks, the cost gap between harm and accountability will widen as export volumes grow at +6%/yr.
+                        </p>
                       </div>
                     </div>
 
@@ -280,7 +224,11 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
                     </Dialog.Root>
 
                     <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
-                    <div className="flex-1 min-w-0" />
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                      <p className="text-[9px] font-bold tracking-widest uppercase text-[#444] font-mono">WHERE HARM IS PRICED — AND WHERE THE ACCOUNTABILITY GAP WIDENS</p>
+                      <p className="text-[10px] text-[#666] leading-snug mb-1">Below the dashed line: share of worker &amp; community harm at each stage. Above: priced cost today (coral) versus 2026–28 (indigo).</p>
+                      <img src={apparelLifecycleChart} alt="Apparel supply chain cost by stage" className="w-full h-auto" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -293,65 +241,68 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
               <div className="border-b border-[#e5e5e5] flex items-center gap-3 px-4 py-2.5 shrink-0">
                 <p className="font-serif flex-1 text-xl font-semibold text-foreground leading-6">Analysis</p>
                 <div className="flex items-center gap-2 shrink-0">
-                  <select
-                    value={mapView}
-                    onChange={e => setMapView(e.target.value as MapView)}
-                    className="text-xs border border-[#d4d4d4] rounded-sm px-2 py-0.5 bg-card text-[#404040]"
-                  >
-                    <option value="factory-density">View: Factory Density</option>
-                    <option value="water-stress">View: Water Stress</option>
-                    <option value="labor-risk">View: Labor Risk</option>
-                  </select>
+                  <span className="text-[10px] text-[#a3a3a3]">2020</span>
+                  <input
+                    type="range" min={2020} max={2030} step={1} value={year}
+                    onChange={e => setYear(Number(e.target.value))}
+                    className="w-36 cursor-pointer"
+                    style={{ accentColor: '#C0503A' }}
+                  />
+                  <span className="text-[10px] text-[#a3a3a3]">2030</span>
+                  <span className="text-xs font-semibold text-foreground bg-[#f5f5f5] border border-[#e5e5e5] px-2 py-0.5 rounded min-w-[3rem] text-center">
+                    {year}
+                  </span>
                 </div>
               </div>
 
-              {/* Stats row */}
-              <div className="border-b border-[#e5e5e5] flex shrink-0">
-                <StatMetric label="Annual Exports" badge="measured" value="$42.1B" description="USD — 2nd largest garment exporter globally" />
-                <StatMetric label="Workforce" badge="measured" value="4.1M" description="workers — 80% women in EPZ factories" />
-                <StatMetric label="External Costs" badge="derived" value={<span className="text-orange-500">$8.9B</span>} description="annual unpriced harm burden" />
-                <StatMetric label="Wage / Retail %" badge="derived" value={<span className="text-red-500">3%</span>} description="avg worker wage as % of retail price" />
-                <StatMetric label="Tier-2 Unaudited" badge="derived" value={<span className="text-orange-500">62%</span>} description="major brand suppliers with no audit" />
-                <StatMetric label="Export Growth" badge="measured" value="+6%/yr" description="trajectory without intervention" />
-              </div>
-
-              {/* Map layer tabs */}
-              <div className="border-b border-[#e5e5e5] flex overflow-x-auto px-2 bg-stone-100 shrink-0">
-                <MapTab label="Factory map" dotColor="#C0503A" active={activeMapTab === 'map'} onClick={() => setActiveMapTab('map')} />
-                <MapTab label="Water quality" dotColor="#3d6b5a" active={activeMapTab === 'water'} onClick={() => setActiveMapTab('water')} />
-                <MapTab label="Labor conditions" dotColor="#c07840" active={activeMapTab === 'labor'} onClick={() => setActiveMapTab('labor')} />
-                <MapTab label="Supply chain" dotColor="#6b4a90" active={activeMapTab === 'supply'} onClick={() => setActiveMapTab('supply')} />
-                <MapTab label="Health impact" dotColor="#8c4040" active={activeMapTab === 'health'} onClick={() => setActiveMapTab('health')} />
-              </div>
+              {/* Stats row — projected state */}
+              {(() => {
+                const BASELINE_YEAR = 2026
+                const t = Math.max(0, Math.min(1, (year - BASELINE_YEAR) / (2030 - BASELINE_YEAR)))
+                const stats = [
+                  { label: 'Water Depletion',  baseline: 0.78, target: 0.95 },
+                  { label: 'Labor Violations', baseline: 0.85, target: 0.97 },
+                  { label: 'Air Quality',       baseline: 0.62, target: 0.91 },
+                ]
+                return (
+                  <div className="border-b border-[#e5e5e5] flex items-stretch shrink-0">
+                    {/* Left label */}
+                    <div className="px-5 py-3 flex flex-col justify-center shrink-0">
+                      <p className="text-sm font-semibold text-foreground leading-tight">
+                        {year <= BASELINE_YEAR ? `Baseline ${year}` : `Projected State (${year})`}
+                      </p>
+                      <p className="text-[10px] text-[#737373] mt-0.5">Current Baseline {BASELINE_YEAR}</p>
+                    </div>
+                    {/* Indicator columns */}
+                    {stats.map(({ label, baseline, target }) => {
+                      const proj = baseline + (target - baseline) * t
+                      const changed = proj > baseline + 0.005
+                      return (
+                        <div key={label} className="border-l border-[#e5e5e5] flex-1 px-5 py-3 flex items-center gap-3">
+                          <span className="text-sm text-[#737373]">{label}</span>
+                          <div className="flex items-baseline gap-1.5">
+                            {changed && <span className="text-[#C0503A] text-sm">↑</span>}
+                            <span className="text-[22px] font-bold text-[#C0503A] leading-none">
+                              {Math.round(proj * 100)}%
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-[#a3a3a3] self-end pb-0.5">
+                            {Math.round(baseline * 100)}%
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
 
               {/* Map area */}
               <div className="flex-1 min-h-0">
-                {activeMapTab === 'map' ? (
-                  <BangladeshMap />
-                ) : (
-                  <div className="flex-1 h-full flex items-center justify-center bg-map-canvas">
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-foreground mb-1">{activeMapTab.charAt(0).toUpperCase() + activeMapTab.slice(1)} view</p>
-                      <p className="text-xs text-[#737373]">Coming soon</p>
-                    </div>
-                  </div>
-                )}
+                <BangladeshMap year={year} />
               </div>
 
               {/* Bottom legend */}
-              <div className="border-t border-[#e5e5e5] flex items-center justify-between px-4 py-1.5 shrink-0">
-                <div className="flex items-center gap-4">
-                  {[
-                    { color: '#22c55e', label: 'Measured' },
-                    { color: '#f97316', label: 'Derived' },
-                    { color: '#ef4444', label: 'Estimated' },
-                  ].map(({ color, label }) => (
-                    <div key={label} className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
-                      <p className="text-[10px] text-[#404040]">{label}</p>
-                    </div>
-                  ))}
-                </div>
+              <div className="border-t border-[#e5e5e5] flex items-center justify-end px-4 py-1.5 shrink-0">
                 <p className="text-[9px] text-[#737373]">
                   BGMEA 2023 · ILO Labor Standards · BWDB Water Quality · UN Comtrade Export Data
                 </p>
@@ -359,10 +310,9 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
             </section>
           </div>
 
-          <div className={`grid transition-all duration-300 ease-in-out self-stretch ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
-            <div className="overflow-hidden h-full">
-              <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col h-full">
-                <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
+          <div className={`grid transition-all duration-300 ease-in-out shrink-0 ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}><div className="w-[240px]" /></div>
+          <aside className={`fixed top-11 right-0 bottom-0 w-[240px] bg-card border-l border-[#e5e5e5] flex flex-col transition-transform duration-300 ease-in-out z-30 ${chatOpen ? 'translate-x-0' : 'translate-x-[260px]'}`}>
+                <div className="flex items-center justify-between px-4 py-3 border-y border-[#e5e5e5] shrink-0 bg-neutral-50">
                   <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Overview Analysis Chat</p>
                   <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
                 </div>
@@ -402,9 +352,7 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
                     </button>
                   </div>
                 </div>
-              </aside>
-            </div>
-          </div>
+          </aside>
         </main>
       )}
       </div>

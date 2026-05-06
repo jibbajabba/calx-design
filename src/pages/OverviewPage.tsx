@@ -99,8 +99,8 @@ function ToggleBtn({ label, active, onClick }: { label: string; active: boolean;
 
 function OverviewChat() {
   return (
-    <aside className="w-[240px] shrink-0 bg-card rounded-lg shadow-sm flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#e5e5e5] shrink-0">
+    <aside className="w-[240px] shrink-0 bg-card border-l border-[#e5e5e5] flex flex-col h-full">
+      <div className="flex items-center justify-between px-4 py-3 border-y border-[#e5e5e5] shrink-0 bg-neutral-50">
         <p className="text-[11px] font-semibold text-[#737373] tracking-widest uppercase">Overview Analysis Chat</p>
         <span className="bg-clay-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-[3px]">AI</span>
       </div>
@@ -212,10 +212,10 @@ export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHo
   }, [year])
 
   return (
-    <div className="flex flex-col bg-background">
+    <div className="flex flex-col bg-background pt-11">
 
       {/* ── App Header ── */}
-      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs sticky top-0 z-10">
+      <header className="bg-card flex items-center gap-2 h-11 px-5 shadow-xs fixed top-0 left-0 right-0 z-10">
         <button onClick={onHome} className="font-serif italic text-foreground text-xl font-semibold leading-6 shrink-0 hover:opacity-70 transition-opacity">
           Calx
         </button>
@@ -355,24 +355,12 @@ export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHo
                         <p className="text-sm text-[#737373] leading-relaxed">
                           California highways emit an estimated <strong className="text-foreground">922.3 t PM10</strong> and <strong className="text-foreground">98 t PM2.5</strong> annually. San Joaquin ranks first in risk — all top counties are Central Valley, where stable winds concentrate deposition on the same farmland year after year.
                         </p>
-                        <div className={`grid transition-all duration-300 ease-in-out ${summaryExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
-                          <div className="overflow-hidden">
-                            <div className="flex flex-col gap-2 pt-1">
-                              <p className="text-sm text-[#737373] leading-relaxed">
-                                An estimated <strong className="text-foreground">$45.1B</strong> in ag value sits within 5km of California highways. Sutter leads farmland exposure at 82.5%, followed by Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%).
-                              </p>
-                              <p className="text-sm text-[#737373] leading-relaxed">
-                                LA County is the largest emitter at <strong className="text-foreground">192.3 t/yr</strong>. The 2020 lockdowns showed a <strong className="text-foreground">10.1% drop</strong> in emissions, validating the model. Traffic grows at +4.0% per decade without intervention.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => setSummaryExpanded(e => !e)}
-                          className="text-sm text-clay-600 font-medium hover:text-clay-700 transition-colors self-start"
-                        >
-                          {summaryExpanded ? 'Show less' : 'Read more →'}
-                        </button>
+                        <p className="text-sm text-[#737373] leading-relaxed">
+                          An estimated <strong className="text-foreground">$45.1B</strong> in ag value sits within 5km of California highways. Sutter leads farmland exposure at 82.5%, followed by Colusa (71.6%), Kings (70.2%), Glenn (63.4%), and Yolo (61.8%).
+                        </p>
+                        <p className="text-sm text-[#737373] leading-relaxed">
+                          LA County is the largest emitter at <strong className="text-foreground">192.3 t/yr</strong>. The 2020 lockdowns showed a <strong className="text-foreground">10.1% drop</strong> in emissions, validating the model. Traffic grows at +4.0% per decade without intervention.
+                        </p>
                       </div>
                     </div>
 
@@ -403,7 +391,9 @@ export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHo
                     </Dialog.Root>
 
                     <div className="w-px bg-[#e5e5e5] shrink-0 self-stretch" />
-                    <div className="flex-1 min-w-0 flex items-center">
+                    <div className="flex-1 min-w-0 flex flex-col gap-1">
+                      <p className="text-[9px] font-bold tracking-widest uppercase text-[#444] font-mono">WHERE POLYMER LEAVES THE TIRE — AND WHERE THE COST LANDS</p>
+                      <p className="text-[10px] text-[#666] leading-snug mb-1">Below the dashed line: TWP released at each stage. Above the dashed line: cost burden today (coral) versus 2026–28 (indigo).</p>
                       <img src={lifecycleChart} alt="TWP lifecycle cost by stage" className="w-full h-auto" />
                     </div>
                   </div>
@@ -562,10 +552,9 @@ export default function OverviewPage({ onHome, initialTab = 'overview' }: { onHo
               </div>
             </section>
           </div>
-          <div className={`grid transition-all duration-300 ease-in-out self-stretch ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}>
-            <div className="overflow-hidden h-full">
-              <OverviewChat />
-            </div>
+          <div className={`grid transition-all duration-300 ease-in-out shrink-0 ${chatOpen ? 'grid-cols-[240px]' : 'grid-cols-[0px]'} overflow-hidden`}><div className="w-[240px]" /></div>
+          <div className={`fixed top-11 right-0 bottom-0 w-[240px] transition-transform duration-300 ease-in-out z-30 ${chatOpen ? 'translate-x-0' : 'translate-x-[260px]'}`}>
+            <OverviewChat />
           </div>
         </main>
       )}
