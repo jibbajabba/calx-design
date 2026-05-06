@@ -57,9 +57,9 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
         </button>
         <div className="w-px h-4 bg-[#d4d4d4] mx-1 shrink-0" />
         <div className="flex items-center gap-1.5 shrink-0">
-          <button className="text-[#404040] text-xs font-medium hover:text-foreground">Apparel</button>
-          <span className="text-[#d4d4d4] text-xs">/</span>
-          <button className="text-[#404040] text-xs font-medium hover:text-foreground">Bangladesh</button>
+          <button className="text-[#404040] text-sm font-medium hover:text-foreground">Apparel</button>
+          <span className="text-[#d4d4d4] text-sm">/</span>
+          <button className="text-[#404040] text-sm font-medium hover:text-foreground">Bangladesh</button>
         </div>
         <div className="flex-1" />
         <div className="flex self-stretch">
@@ -69,7 +69,7 @@ export default function ApparelPage({ onHome, initialTab = 'overview' }: { onHom
               const labels = ['Overview', 'Harms', 'Interventions']
               return (
                 <div key={t} className="flex flex-col self-stretch">
-                  <button onClick={() => switchTab(t)} className={`flex-1 flex items-center gap-1.5 px-4 text-xs font-medium transition-colors ${tab === t ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
+                  <button onClick={() => switchTab(t)} className={`flex-1 flex items-center gap-1.5 px-4 text-sm font-medium transition-colors ${tab === t ? 'border-b-2 border-clay-600 text-clay-600' : 'text-[#404040] hover:bg-neutral-100'}`}>
                     {icons[i]}
                     {labels[i]}
                   </button>
